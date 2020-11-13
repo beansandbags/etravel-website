@@ -5,14 +5,11 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
-var Amadeus = require('amadeus');
 
-  
-const amadeusApi = new Amadeus({
-	clientId: 'c1h4se6YIc551mgjMzB9BJMzPVxtb7In',
-	clientSecret: 'uDwP1bRxyp2o5WHE'
+
+const flightApi = axios.create({
+	baseURL: 'http://localhost:5000/flights'
 })
-
 
 class Home extends Component {
 	state = {
@@ -22,11 +19,6 @@ class Home extends Component {
 	
 	constructor() {
 		super();
-		
-		amadeusApi.referenceData.location.get({
-			keyword: this.state.airportSearchString,
-			subType: Amadeus.location.any
-		})
 	}
 
 
