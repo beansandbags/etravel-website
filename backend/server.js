@@ -15,4 +15,7 @@ const amadeus = new Amadeus({
 	clientSecret: amadeusCredentials.clientSecret
 })
 
+amadeus.referenceData.urls.checkinLinks.get({ airline: 'IB' })
+									   .then(res => console.log(res))
+
 app.use('/flights', )
