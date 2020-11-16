@@ -21,6 +21,7 @@ class Flights extends Component {
 		super()
 		console.log("Here")
 		this.onStartDateChange = this.onStartDateChange.bind(this);
+		this.onReturnDateChange = this.onReturnDateChange.bind(this);
 	}
 
 	async onStartDateChange(date){
@@ -29,6 +30,12 @@ class Flights extends Component {
 		this.setState({ startDate: date })
 		console.log(this.state.startDate)
 	}
+
+	
+	async onReturnDateChange(date){
+		this.setState({ returnDate: date })
+	}
+
 
 	async onSourceChange(loc){
 		this.setState({ sourceLoc: loc })
@@ -39,7 +46,7 @@ class Flights extends Component {
 	}
 
 	submit(e){
-
+		
 	}
 
 	render() {
@@ -51,6 +58,13 @@ class Flights extends Component {
 			var startDatePlaceholder = startDate + "/" + startMonth + "/" + startYear
 		} else {
 			var startDatePlaceholder = "Date"
+		}
+
+		if(this.state.returnDate != null){
+			let [returnMonth, returnDate, returnYear] = new Date(this.state.returnDate).toLocaleDateString("en-US").split("/")
+			var returnDatePlaceholder = returnDate + "/" + returnMonth + "/" + returnYear
+		} else {
+			var returnDatePlaceholder = "Date"
 		}
 
 		return(
@@ -76,13 +90,39 @@ class Flights extends Component {
 								<Col>
 									<Form.Group controlId="formGroupDate">
 										<Form.Label>Departure Date</Form.Label>
-										<OverlayTrigger trigger="click" placement="bottom" rootClose="true" overlay={ <Popover><Calendar minDate={ new Date(Date.now()) } maxDate={ new Date(future) } onChange={ (value, event) => this.onStartDateChange(value) } /></Popover> }><Form.Control type="go-date" placeholder={startDatePlaceholder} /></OverlayTrigger>
+										<OverlayTrigger 
+											trigger="click" 
+											placement="bottom" 
+											rootClose="true" 
+											overlay={ 
+												<Popover>
+													<Calendar 
+													minDate={ new Date(Date.now()) } 
+													maxDate={ new Date(future) } 
+													onChange={ (value, event) => this.onStartDateChange(value) } />
+												</Popover> 
+										}>
+											<Form.Control type="go-date" placeholder={startDatePlaceholder} />
+										</OverlayTrigger>
 									</Form.Group>
 								</Col>
 								<Col>
 									<Form.Group controlId="formGroupReturnDate">
 										<Form.Label>Return Date</Form.Label>
-										<OverlayTrigger trigger="click" placement="bottom" rootClose="true" overlay={ <Popover><Calendar /></Popover> }><Form.Control type="return-date" placeholder="Date"/ ></OverlayTrigger>
+										<OverlayTrigger 
+											trigger="click" 
+											placement="bottom" 
+											rootClose="true" 
+											overlay={ 
+												<Popover>
+													<Calendar 
+													minDate={ new Date(this.state.startDate) } 
+													maxDate={ new Date(future) } 
+													onChange={ (value, event) => this.onReturnDateChange(value) } />
+												</Popover> 
+										}>
+											<Form.Control type="return-date" placeholder={returnDatePlaceholder} />
+										</OverlayTrigger>
 									</Form.Group>
 								</Col>
 							</Row>
