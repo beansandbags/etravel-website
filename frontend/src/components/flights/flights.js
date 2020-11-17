@@ -1,7 +1,7 @@
-import React, { Component, Link, useState } from 'react';
+import React, { Component } from 'react';
 
 import './flights.css'
-import { Container, Row, Col, Image, Alert, Form, Card, OverlayTrigger, Popover, Button } from 'react-bootstrap';
+import { Container, Row, Col, Form, Card, OverlayTrigger, Popover, Button } from 'react-bootstrap';
 //import { Typeahead } from 'react-bootstrap-typeahead';
 
 import Calendar from 'react-calendar';
@@ -10,46 +10,78 @@ import 'react-calendar/dist/Calendar.css';
 
 
 class Flights extends Component {
-	state={
+	state = {
 		sourceLoc: null,
 		desLoc: null,
 		startDate: null,
 		returnDate: null,
-		TripType: null,
+		TripType: 'single',
+		FormFieldsFilled: false,
 	}
 
 	constructor(){
 		super()
+		this.onSourceChange = this.onSourceChange.bind(this);
+		this.onDestChange = this.onDestChange.bind(this);
 		this.onStartDateChange = this.onStartDateChange.bind(this);
 		this.onReturnDateChange = this.onReturnDateChange.bind(this);
 		this.onTripTypeChange = this.onTripTypeChange.bind(this);	
 	}
 
+	async checkFormFields(){
+		if(this.state.TripType === 'single'){
+			if(
+				this.state.sourceLoc != null &&
+				this.state.desLoc != null && 
+				this.state.startDate != null
+				)
+				{
+				this.setState({ FormFieldsFilled: true })
+				} else {
+					this.setState({ FormFieldsFilled: false })
+				}
+		} else {
+			if(
+				this.state.sourceLoc != null && 
+				this.state.desLoc != null && 
+				this.state.startDate != null && 
+				this.state.returnDate != null
+				)
+				{
+				this.setState({ FormFieldsFilled: true })
+				} else {
+					this.setState({ FormFieldsFilled: false })
+				}
+		}
+	}
+
 	async onStartDateChange(date){
-		this.setState({ startDate: date })
+		this.setState({ startDate: date }, this.checkFormFields)
 	}
 
 	
 	async onReturnDateChange(date){
-		this.setState({ returnDate: date })
+		this.setState({ returnDate: date }, this.checkFormFields)
 	}
 
 
-	async onSourceChange(loc){
-		this.setState({ sourceLoc: loc })
+	async onSourceChange(event){
+		this.setState({ sourceLoc: event.target.value }, this.checkFormFields)
+
 	}
 
-	async onDestChange(loc){
-		this.setState({ desLoc: loc })
+	async onDestChange(event){
+		this.setState({ desLoc: event.target.value }, this.checkFormFields)
 	}
 
 	async onTripTypeChange(event){
-		console.log("Check", event.target.value)
-		this.setState({	TripType: event.target.value })
+		this.setState({	TripType: event.target.value }, this.checkFormFields)
 	}
 
 	submit(e){
-
+		e.preventDefault()
+		var submitObject = this.state
+		console.log(submitObject)
 	}
 
 	render() {
@@ -60,9 +92,9 @@ class Flights extends Component {
 		var returnDatePlaceholder
 		var returnDateFormControl
 		var returnCalStartDate
+		var submitButtonControl
 
-
-		if(this.state.startDate != null){
+		if(this.state.startDate !== null){
 			let [startMonth, startDate, startYear] = new Date(this.state.startDate).toLocaleDateString("en-US").split("/")
 			startDatePlaceholder = startDate + "/" + startMonth + "/" + startYear
 			returnCalStartDate = new Date(this.state.startDate)
@@ -71,7 +103,7 @@ class Flights extends Component {
 			returnCalStartDate = new Date(Date.now())
 		}
 
-		if(this.state.returnDate != null){
+		if(this.state.returnDate !== null){
 			let [returnMonth, returnDate, returnYear] = new Date(this.state.returnDate).toLocaleDateString("en-US").split("/")
 			returnDatePlaceholder = returnDate + "/" + returnMonth + "/" + returnYear
 		} else {
@@ -79,27 +111,33 @@ class Flights extends Component {
 		}
 
 		if(this.state.TripType !== "round"){
-			returnDateFormControl = <Form.Control type="return-date" placeholder={ returnDatePlaceholder } disabled />
+			returnDateFormControl = <Form.Control className="bg-dark text-white" type="return-date" placeholder={ returnDatePlaceholder } disabled />
 		} else {
-			returnDateFormControl = <Form.Control type="return-date" placeholder={ returnDatePlaceholder } />
+			returnDateFormControl = <Form.Control className="bg-dark text-white" type="return-date" placeholder={ returnDatePlaceholder } />
+		}
+
+		if(this.state.FormFieldsFilled){
+			submitButtonControl = <Button variant="light" type="submit" onClick={ (e) => this.submit(e) }>Search</Button>
+		} else {
+			submitButtonControl = <Button variant="light" type="submit" disabled>Search</Button>
 		}
 
 		return(
 			<section className="flights-background-img">
 				<Container className="pt-5">
-					<Card style={{ width: '30rem' }}>
+					<Card className="bg-dark text-white" style={{ width: '30rem' }}>
 						<Form className="px-4 py-4">
 							<Row>
 								<Col>
 									<Form.Group controlId="formGroupSource">
 										<Form.Label>Depart From</Form.Label>
-										<Form.Control type="source-loc" placeholder="City" onChange={(value) => this.onSourceChange(value)} />
+										<Form.Control className="bg-dark text-white" type="source-loc" placeholder="City" onChange={ this.onSourceChange } />
 									</Form.Group>
 								</Col>
 								<Col>
 									<Form.Group controlId="formGroupDest">
 										<Form.Label>Going To</Form.Label>
-										<Form.Control type="dest-loc" placeholder="City" onChange={(value) => this.onDestChange(value)} />
+										<Form.Control className="bg-dark text-white" type="dest-loc" placeholder="City" onChange={ this.onDestChange } />
 									</Form.Group>
 								</Col>
 							</Row>
@@ -143,7 +181,7 @@ class Flights extends Component {
 													onChange={ (value, event) => this.onStartDateChange(value) } />
 												</Popover> 
 										}>
-											<Form.Control type="go-date" placeholder={startDatePlaceholder} />
+											<Form.Control className="bg-dark text-white" type="go-date" placeholder={startDatePlaceholder} />
 										</OverlayTrigger>
 									</Form.Group>
 								</Col>
@@ -169,9 +207,7 @@ class Flights extends Component {
 							</Row>
 							<Row>
 								<Col>
-									<Button variant="light" type="submit">
-										Search
-									</Button>
+									{ submitButtonControl }
 								</Col>
 							</Row>
 						</Form>
