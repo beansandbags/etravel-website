@@ -15,20 +15,18 @@ class Flights extends Component {
 		desLoc: null,
 		startDate: null,
 		returnDate: null,
+		TripType: null,
 	}
 
 	constructor(){
 		super()
-		console.log("Here")
 		this.onStartDateChange = this.onStartDateChange.bind(this);
 		this.onReturnDateChange = this.onReturnDateChange.bind(this);
+		this.onTripTypeChange = this.onTripTypeChange.bind(this);	
 	}
 
 	async onStartDateChange(date){
-		console.log("1xx1")
-		console.log(date)
 		this.setState({ startDate: date })
-		console.log(this.state.startDate)
 	}
 
 	
@@ -45,26 +43,45 @@ class Flights extends Component {
 		this.setState({ desLoc: loc })
 	}
 
+	async onTripTypeChange(event){
+		console.log("Check", event.target.value)
+		this.setState({	TripType: event.target.value })
+	}
+
 	submit(e){
-		
+
 	}
 
 	render() {
 		let [month, date, year] = new Date(Date.now()).toLocaleDateString("en-US").split("/")
 		const future = new Date(String(Number(year)+1), String(Number(month)-1), date)
 
+		var startDatePlaceholder
+		var returnDatePlaceholder
+		var returnDateFormControl
+		var returnCalStartDate
+
+
 		if(this.state.startDate != null){
 			let [startMonth, startDate, startYear] = new Date(this.state.startDate).toLocaleDateString("en-US").split("/")
-			var startDatePlaceholder = startDate + "/" + startMonth + "/" + startYear
+			startDatePlaceholder = startDate + "/" + startMonth + "/" + startYear
+			returnCalStartDate = new Date(this.state.startDate)
 		} else {
-			var startDatePlaceholder = "Date"
+			startDatePlaceholder = "Date"
+			returnCalStartDate = new Date(Date.now())
 		}
 
 		if(this.state.returnDate != null){
 			let [returnMonth, returnDate, returnYear] = new Date(this.state.returnDate).toLocaleDateString("en-US").split("/")
-			var returnDatePlaceholder = returnDate + "/" + returnMonth + "/" + returnYear
+			returnDatePlaceholder = returnDate + "/" + returnMonth + "/" + returnYear
 		} else {
-			var returnDatePlaceholder = "Date"
+			returnDatePlaceholder = "Date"
+		}
+
+		if(this.state.TripType !== "round"){
+			returnDateFormControl = <Form.Control type="return-date" placeholder={ returnDatePlaceholder } disabled />
+		} else {
+			returnDateFormControl = <Form.Control type="return-date" placeholder={ returnDatePlaceholder } />
 		}
 
 		return(
@@ -84,6 +101,30 @@ class Flights extends Component {
 										<Form.Label>Going To</Form.Label>
 										<Form.Control type="dest-loc" placeholder="City" onChange={(value) => this.onDestChange(value)} />
 									</Form.Group>
+								</Col>
+							</Row>
+							<Row>
+								<Col>
+									<Form.Check
+										type='radio'
+										name='triptype'
+										id='trip1'
+										value='single'
+										label="One Way"
+										checked={this.state.TripType === "single"}
+										onChange={this.onTripTypeChange}
+										/>
+								</Col>
+								<Col>
+									<Form.Check
+										type='radio'
+										name='triptype'
+										id='trip2'
+										value='round'
+										label="Round Trip"
+										checked={this.state.TripType === "round"}
+										onChange={this.onTripTypeChange}										
+										/>
 								</Col>
 							</Row>
 							<Row>
@@ -116,12 +157,12 @@ class Flights extends Component {
 											overlay={ 
 												<Popover>
 													<Calendar 
-													minDate={ new Date(this.state.startDate) } 
+													minDate={ returnCalStartDate } 
 													maxDate={ new Date(future) } 
 													onChange={ (value, event) => this.onReturnDateChange(value) } />
 												</Popover> 
 										}>
-											<Form.Control type="return-date" placeholder={returnDatePlaceholder} />
+											{ returnDateFormControl }
 										</OverlayTrigger>
 									</Form.Group>
 								</Col>
