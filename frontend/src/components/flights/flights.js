@@ -1,13 +1,19 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 
 import './flights.css'
 import { Container, Row, Col, Form, Card, OverlayTrigger, Popover, Button, ToggleButton, ButtonGroup } from 'react-bootstrap';
-//import { Typeahead } from 'react-bootstrap-typeahead';
+
+import { Typeahead, AsyncTypeahead } from 'react-bootstrap-typeahead';
+import 'react-bootstrap-typeahead/css/Typeahead.css';
 
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import 'react-bootstrap-typeahead/css/Typeahead.css';
 
+
+const amadeusApi = axios.create({
+	baseURL: 'http://localhost:5000/flights'
+})
 
 
 class Flights extends Component {
@@ -22,15 +28,22 @@ class Flights extends Component {
 		adultTravellerCount: 1,
 		ticketClass: 'Economy',
 		FormFieldsFilled: false,
+		cityArray: null,
 	}
 
 	constructor(){
 		super()
+		amadeusApi.get('/cities', { params: { cityName: "Ne", page: 0 } } )
+		.then( res => {
+			this.setState({ cityArray: res.data.data })
+		})
+		.catch((err) => console.log(err))
 		this.onSourceChange = this.onSourceChange.bind(this);
 		this.onDestChange = this.onDestChange.bind(this);
 		this.onStartDateChange = this.onStartDateChange.bind(this);
 		this.onReturnDateChange = this.onReturnDateChange.bind(this);
 		this.onTripTypeChange = this.onTripTypeChange.bind(this);	
+		this.locSearch = this.locSearch.bind(this);
 	}
 
 	async checkFormFields(){
@@ -82,8 +95,23 @@ class Flights extends Component {
 
 
 	async onSourceChange(event){
+		console.log("SUP")
 		this.setState({ sourceLoc: event.target.value }, this.checkFormFields)
+			.then(
+				amadeusApi.get('/cities', {params: { key: event.target.value } })
+				.then(res => {
+				this.setState({ cityArray: res.data.data })
+				})
+			)
+			.then(console.log("123 ", this.state.sourceLoc))
+	}
 
+	async locSearch(event){
+		console.log("Triggered")
+		amadeusApi.get('/cities', {params: { key: event.target.value } })
+				.then(res => {
+				this.setState({ cityArray: res.data.data })
+			})
 	}
 
 	async onDestChange(event){
@@ -185,7 +213,17 @@ class Flights extends Component {
 								<Col>
 									<Form.Group controlId="formGroupSource">
 										<Form.Label>Depart From</Form.Label>
-										<Form.Control className="bg-dark text-white" type="source-loc" placeholder="City" onChange={ this.onSourceChange } />
+										<Typeahead
+											className="bg-dark text-white"
+											onSearch={ (e) => this.locSearch }
+											onChange={ (e) => this.onSourceChange }
+											options={this.state.cityArray}
+											id="source-loc"
+											minLength={2}
+											labelKey="name"
+											selected={this.state.sourceLoc}
+											placeholder="City"
+											/>
 									</Form.Group>
 								</Col>
 								<Col>
@@ -349,7 +387,7 @@ class Flights extends Component {
 												</Popover>
 											}
 											>
-										<Form.Control className="bg-dark text-white" type="travellerQuantityClass" value={ quantityClassString } readOnly />
+										<Form.Control className="bg-dark text-white" type="travellerQuantityClass" defaultValue={ quantityClassString } readOnly />
 										</OverlayTrigger>
 									</Form.Group>
 								</Col>

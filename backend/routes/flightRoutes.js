@@ -17,7 +17,8 @@ router.get(`/citySearch`, async (req, res) => {
 	  .get({ 
 		keyword: keywords, 
 		subType: "CITY,AIRPORT", 
-	  }) 
+		"page[offset]": page * 10
+	  })
 	  .catch((x) => console.log(x)); 
 	try { 
 	  await res.json(JSON.parse(response.body)); 
@@ -26,9 +27,8 @@ router.get(`/citySearch`, async (req, res) => {
 	} 
   });
 
-router.get(`/airports/:term`, async (req, res) => {
-	key = req.params.term
-	console.log(key)
+router.get(`/cities`, async (req, res) => {
+	var key = req.query.cityName
 	// API call with params we requested from client app
 	const response = await amadeus.client.get("/v1/reference-data/locations", {
 		keyword: key,
