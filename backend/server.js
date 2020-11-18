@@ -2,20 +2,13 @@ const express = require('express');
 
 const keys = require('./config/keys')
 
-const Amadeus = require('amadeus');
-
 const flightRoutes = require('./routes/flightRoutes')
 
 const app = express();
 
-const amadeusCredentials = keys.amadeus;
 
-const amadeus = new Amadeus({
-	clientId: amadeusCredentials.clientId,
-	clientSecret: amadeusCredentials.clientSecret
-})
+app.use('/flights', flightRoutes)
 
-amadeus.referenceData.urls.checkinLinks.get({ airline: 'IB' })
-									   .then(res => console.log(res))
+const port = process.env.PORT || 5000;
 
-app.use('/flights', )
+app.listen(port, () => console.log(`Server started on port ${port}`));

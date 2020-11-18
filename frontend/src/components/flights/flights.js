@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 
 import './flights.css'
-import { Container, Row, Col, Form, Card, OverlayTrigger, Popover, Button } from 'react-bootstrap';
+import { Container, Row, Col, Form, Card, OverlayTrigger, Popover, Button, ToggleButton, ButtonGroup } from 'react-bootstrap';
 //import { Typeahead } from 'react-bootstrap-typeahead';
 
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import 'react-bootstrap-typeahead/css/Typeahead.css';
 
 
 
@@ -16,6 +17,10 @@ class Flights extends Component {
 		startDate: null,
 		returnDate: null,
 		TripType: 'single',
+		infantTravellerCount: 0,
+		childrenTravellerCount: 0,
+		adultTravellerCount: 1,
+		ticketClass: 'Economy',
 		FormFieldsFilled: false,
 	}
 
@@ -29,11 +34,21 @@ class Flights extends Component {
 	}
 
 	async checkFormFields(){
+		if(this.state.adultTravellerCount < 0){
+			this.setState({ adultTravellerCount: 0 })
+		}
+		if(this.state.childrenTravellerCount < 0){
+			this.setState({ childrenTravellerCount: 0 })
+		}
+		if(this.state.infantTravellerCount < 0){
+			this.setState({ infantTravellerCount: 0 })
+		}
 		if(this.state.TripType === 'single'){
 			if(
 				this.state.sourceLoc != null &&
 				this.state.desLoc != null && 
-				this.state.startDate != null
+				this.state.startDate != null &&
+				this.state.adultTravellerCount > 0
 				)
 				{
 				this.setState({ FormFieldsFilled: true })
@@ -45,7 +60,8 @@ class Flights extends Component {
 				this.state.sourceLoc != null && 
 				this.state.desLoc != null && 
 				this.state.startDate != null && 
-				this.state.returnDate != null
+				this.state.returnDate != null &&
+				this.state.adultTravellerCount > 0
 				)
 				{
 				this.setState({ FormFieldsFilled: true })
@@ -78,6 +94,41 @@ class Flights extends Component {
 		this.setState({	TripType: event.target.value }, this.checkFormFields)
 	}
 
+	async onCountChangeManual(event, type){
+		if(type === 0){
+			this.setState({ infantTravellerCount: Number(event.target.value)}, this.checkFormFields)		
+		} if(type === 1){
+			this.setState({ childrenTravellerCount: Number(event.target.value)}, this.checkFormFields)
+		} if(type === 2){
+				this.setState({ adultTravellerCount: Number(event.target.value)}, this.checkFormFields)
+		} else {
+			console.log("Invalid input")
+		}
+	}
+
+	async onCountClick(event, type, delta){
+		event.preventDefault()
+		if(type === 0 & this.state.infantTravellerCount >= 0 ){
+			var iTC = this.state.infantTravellerCount
+			iTC += delta
+			this.setState({ infantTravellerCount: iTC }, this.checkFormFields)
+		} if(type === 1){
+			var cTC = this.state.childrenTravellerCount
+			cTC += delta
+			this.setState({ childrenTravellerCount: cTC }, this.checkFormFields)
+		} if(type === 2){
+			var aTC = this.state.adultTravellerCount
+			aTC += delta
+			this.setState({ adultTravellerCount: aTC }, this.checkFormFields)
+		} else {
+			console.log("Invalid input")
+		}
+	}
+
+	async onClassChange(event){
+		this.setState({ ticketClass: event.target.value }, this.checkFormFields)
+	}
+
 	submit(e){
 		e.preventDefault()
 		var submitObject = this.state
@@ -99,7 +150,7 @@ class Flights extends Component {
 			startDatePlaceholder = startDate + "/" + startMonth + "/" + startYear
 			returnCalStartDate = new Date(this.state.startDate)
 		} else {
-			startDatePlaceholder = "Date"
+			startDatePlaceholder = null
 			returnCalStartDate = new Date(Date.now())
 		}
 
@@ -107,25 +158,28 @@ class Flights extends Component {
 			let [returnMonth, returnDate, returnYear] = new Date(this.state.returnDate).toLocaleDateString("en-US").split("/")
 			returnDatePlaceholder = returnDate + "/" + returnMonth + "/" + returnYear
 		} else {
-			returnDatePlaceholder = "Date"
+			returnDatePlaceholder = null
 		}
 
 		if(this.state.TripType !== "round"){
-			returnDateFormControl = <Form.Control className="bg-dark text-white" type="return-date" placeholder={ returnDatePlaceholder } disabled />
+			returnDateFormControl = <Form.Control className="bg-dark text-white" type="return-date" value={ returnDatePlaceholder } placeholder="Return Date" disabled />
 		} else {
-			returnDateFormControl = <Form.Control className="bg-dark text-white" type="return-date" placeholder={ returnDatePlaceholder } />
+			returnDateFormControl = <Form.Control className="bg-dark text-white" type="return-date" value={ returnDatePlaceholder } placeholder="Return Date" />
 		}
 
 		if(this.state.FormFieldsFilled){
-			submitButtonControl = <Button variant="light" type="submit" onClick={ (e) => this.submit(e) }>Search</Button>
+			submitButtonControl = <Button variant="light" type="submit" block onClick={ (e) => this.submit(e) }>Search</Button>
 		} else {
-			submitButtonControl = <Button variant="light" type="submit" disabled>Search</Button>
+			submitButtonControl = <Button variant="light" type="submit" block disabled>Search</Button>
 		}
+
+		var totalTicketCount = this.state.infantTravellerCount + this.state.childrenTravellerCount + this.state.adultTravellerCount
+		var quantityClassString = totalTicketCount + ", " + this.state.ticketClass
 
 		return(
 			<section className="flights-background-img">
 				<Container className="pt-5">
-					<Card className="bg-dark text-white" style={{ width: '30rem' }}>
+					<Card className="bg-dark text-white" style={{ width: '30rem', height: '24.5rem' }}>
 						<Form className="px-4 py-4">
 							<Row>
 								<Col>
@@ -143,26 +197,28 @@ class Flights extends Component {
 							</Row>
 							<Row>
 								<Col>
-									<Form.Check
-										type='radio'
-										name='triptype'
-										id='trip1'
-										value='single'
-										label="One Way"
-										checked={this.state.TripType === "single"}
-										onChange={this.onTripTypeChange}
-										/>
-								</Col>
-								<Col>
-									<Form.Check
-										type='radio'
-										name='triptype'
-										id='trip2'
-										value='round'
-										label="Round Trip"
-										checked={this.state.TripType === "round"}
-										onChange={this.onTripTypeChange}										
-										/>
+									<ButtonGroup toggle className="my-1" style={{ display: 'flex' }}>
+										<ToggleButton
+											type="radio"
+											variant="secondary"
+											name="tripType"
+											value="single"
+											checked={this.state.TripType === "single"}
+											onChange={this.onTripTypeChange}
+											>
+												One Way
+											</ToggleButton>
+											<ToggleButton
+											type="radio"
+											variant="secondary"
+											name="tripType"
+											value="round"
+											checked={this.state.TripType === "round"}
+											onChange={this.onTripTypeChange}
+											>
+												Round Trip
+											</ToggleButton>
+									</ButtonGroup>
 								</Col>
 							</Row>
 							<Row>
@@ -172,7 +228,7 @@ class Flights extends Component {
 										<OverlayTrigger 
 											trigger="click" 
 											placement="bottom" 
-											rootClose="true" 
+											rootClose= { true }
 											overlay={ 
 												<Popover>
 													<Calendar 
@@ -181,7 +237,7 @@ class Flights extends Component {
 													onChange={ (value, event) => this.onStartDateChange(value) } />
 												</Popover> 
 										}>
-											<Form.Control className="bg-dark text-white" type="go-date" placeholder={startDatePlaceholder} />
+											<Form.Control className="bg-dark text-white" type="go-date" value={ startDatePlaceholder } placeholder="Departure Date" />
 										</OverlayTrigger>
 									</Form.Group>
 								</Col>
@@ -191,7 +247,7 @@ class Flights extends Component {
 										<OverlayTrigger 
 											trigger="click" 
 											placement="bottom" 
-											rootClose="true" 
+											rootClose={ true } 
 											overlay={ 
 												<Popover>
 													<Calendar 
@@ -201,6 +257,99 @@ class Flights extends Component {
 												</Popover> 
 										}>
 											{ returnDateFormControl }
+										</OverlayTrigger>
+									</Form.Group>
+								</Col>
+							</Row>
+							<Row>
+								<Col>
+									<Form.Group controlId="travellerQuantityClass">
+										<Form.Label>Traveller(s), Class</Form.Label>
+										<OverlayTrigger
+											trigger="click"
+											placement="right"
+											rootClose={ true }
+											overlay={
+												<Popover>
+													<Card className="bg-secondary text-white" style={{ width: '30rem', height: '15rem' }}>
+														<Card.Header as="h6">
+															Select Travellers
+														</Card.Header>
+														<Container className="py-4 px-4">
+															<Row className="px-2">
+																<Col className="px-4">
+																	<Form.Group controlId="adultTraveller">
+																		<Row>
+																			<Form.Label>Adult</Form.Label>
+																		</Row>
+																		<Row>
+																			<Col className="py-0 px-0 my-0 mx-0">
+																				<Button size="sm" block variant="light" onClick={ (e) => this.onCountClick(e, 2, -1) }>-</Button>
+																			</Col>
+																			<Col className="py-0 px-0 my-0 mx-0" xs={6}>
+																				<Form.Control block size="sm" value={ this.state.adultTravellerCount } onChange={ (e) => this.onCountChangeManual(e, 2) } />
+																			</Col>
+																			<Col className="py-0 px-0 my-0 mx-0">
+																				<Button size="sm" block variant="light" onClick={ (e) => this.onCountClick(e, 2, 1) }>+</Button>
+																			</Col>
+																		</Row>
+																	</Form.Group>
+																</Col>
+																<Col className="px-4">
+																	<Form.Group controlId="childTraveller">
+																		<Row>
+																			<Form.Label>Children</Form.Label>
+																		</Row>
+																		<Row>
+																			<Col className="py-0 px-0 my-0 mx-0">
+																				<Button size="sm" block variant="light" onClick={ (e) => this.onCountClick(e, 1, -1) }>-</Button>
+																			</Col>
+																			<Col className="py-0 px-0 my-0 mx-0" xs={6}>
+																				<Form.Control block size="sm" value={ this.state.childrenTravellerCount } onChange={ (e) => this.onCountChangeManual(e, 1) } />
+																			</Col>
+																			<Col className="py-0 px-0 my-0 mx-0">
+																				<Button size="sm" block variant="light" onClick={ (e) => this.onCountClick(e, 1, 1) }>+</Button>
+																			</Col>
+																		</Row>
+																	</Form.Group>
+																</Col>
+																<Col className="px-4">
+																	<Form.Group controlId="infantTraveller">
+																		<Row>
+																			<Form.Label>Infant(s)</Form.Label>
+																		</Row>
+																		<Row>
+																			<Col className="py-0 px-0 my-0 mx-0">
+																				<Button size="sm" block variant="light" onClick={ (e) => this.onCountClick(e, 0, -1) }>-</Button>
+																			</Col>
+																			<Col className="py-0 px-0 my-0 mx-0" xs={6}>
+																				<Form.Control block size="sm" value={ this.state.infantTravellerCount } onChange={ (e) => this.onCountChangeManual(e, 0) }/>
+																			</Col>
+																			<Col className="py-0 px-0 my-0 mx-0">
+																				<Button size="sm" block variant="light" onClick={ (e) => this.onCountClick(e, 0, 1) }>+</Button>
+																			</Col>
+																		</Row>
+																	</Form.Group>
+																</Col>
+															</Row>
+															<Row>
+																<Col>
+																	<Form.Group controlId="travelClassSelect">
+																		<Form.Label>Ticket Class</Form.Label>
+																		<Form.Control as="select" custom onChange={ (e) => this.onClassChange(e) }>
+																			<option>Economy</option>
+																			<option>Premium Economy</option>
+																			<option>Business</option>
+																		</Form.Control>
+																	</Form.Group>
+																</Col>
+															</Row>
+														</Container>
+													</Card>
+												</Popover>
+											}
+											>
+										<Form.Control className="bg-dark text-white" type="travellerQuantityClass" value={ quantityClassString } readOnly />
 										</OverlayTrigger>
 									</Form.Group>
 								</Col>
