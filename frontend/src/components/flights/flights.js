@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 
 import './flights.css'
-import { Container, Row, Col, Form, Card, OverlayTrigger, Popover, Button, ToggleButton, ButtonGroup } from 'react-bootstrap';
+import { Container, Row, Col, Form, Card, OverlayTrigger, Popover, Button, ToggleButton, ButtonGroup, Jumbotron } from 'react-bootstrap';
 
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
@@ -219,7 +219,8 @@ class Flights extends Component {
 		return(
 			<section className="flights-background-img">
 				<Container className="pt-5">
-					<Card className="bg-dark text-white" style={{ width: '30rem', height: '24.5rem' }}>
+					<Row>
+					<Card className="bg-dark text-white mx-4" style={{ width: '30rem', height: '24.5rem' }}>
 						<Form className="px-4 py-4">
 							<Row>
 								<Col>
@@ -423,6 +424,12 @@ class Flights extends Component {
 							</Row>
 						</Form>
 					</Card>
+					<Jumbotron style={{ height: '10rem', background:'rgba(255,255,255,0.2)' }} className="text-white">
+						<div>
+							<h1 style={{ opacity: '1', color: '#ffffffff' }}>Where do you want to go?</h1>
+						</div>
+					</Jumbotron>
+					</Row>
 				</Container>
 			</section>
 		)

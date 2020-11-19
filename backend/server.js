@@ -3,8 +3,15 @@ const express = require('express');
 const keys = require('./config/keys')
 
 const cors = require('cors')
+const passport = require('passport')
+const cookieSession = require('cookie-session');
 
 const flightRoutes = require('./routes/flightRoutes')
+const profileRoutes = require('./routes/profileRoutes')
+const authRoutes = require('./routes/authRoutes')
+
+const passportSetup = require('./config/passport-setup')
+
 
 const app = express();
 
@@ -17,7 +24,14 @@ app.use(function(req, res, next) {
     next();
   });
 
+
+app.use(passport.initialize())
+app.use(passport.session())
+
+
 app.use('/flights', flightRoutes)
+app.use('/auth', authRoutes)
+app.use('/profile', profileRoutes)
 
 const port = process.env.PORT || 5000;
 
