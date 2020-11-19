@@ -27,7 +27,7 @@ const UserSchema = new Schema({
         type: String,
         default: "1xx1",
     },
-    flight: {
+    ticket: {
         type: [TicketSchema],
         default: []
     },
