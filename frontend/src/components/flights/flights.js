@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import axios from 'axios';
 
 import './flights.css'
@@ -28,22 +28,24 @@ class Flights extends Component {
 		adultTravellerCount: 1,
 		ticketClass: 'Economy',
 		FormFieldsFilled: false,
-		cityArray: null,
+		sourceCityArray: null,
+		desCityArray: null,
+		sourceCityCount: 0,
+		
 	}
 
 	constructor(){
 		super()
-		amadeusApi.get('/cities', { params: { cityName: "Ne", page: 0 } } )
-		.then( res => {
-			this.setState({ cityArray: res.data.data })
-		})
+		amadeusApi.get('/citySearch', { params: { cityName: "lmnopq" } } )
+		.then(res => {
+			console.log("Loading Done")
+			this.setState({ sourceCityArray: res.data.cityData, desCityArray: res.data.cityData })
+		 })
 		.catch((err) => console.log(err))
-		this.onSourceChange = this.onSourceChange.bind(this);
 		this.onDestChange = this.onDestChange.bind(this);
 		this.onStartDateChange = this.onStartDateChange.bind(this);
 		this.onReturnDateChange = this.onReturnDateChange.bind(this);
 		this.onTripTypeChange = this.onTripTypeChange.bind(this);	
-		this.locSearch = this.locSearch.bind(this);
 	}
 
 	async checkFormFields(){
@@ -93,26 +95,6 @@ class Flights extends Component {
 		this.setState({ returnDate: date }, this.checkFormFields)
 	}
 
-
-	async onSourceChange(event){
-		console.log("SUP")
-		this.setState({ sourceLoc: event.target.value }, this.checkFormFields)
-			.then(
-				amadeusApi.get('/cities', {params: { key: event.target.value } })
-				.then(res => {
-				this.setState({ cityArray: res.data.data })
-				})
-			)
-			.then(console.log("123 ", this.state.sourceLoc))
-	}
-
-	async locSearch(event){
-		console.log("Triggered")
-		amadeusApi.get('/cities', {params: { key: event.target.value } })
-				.then(res => {
-				this.setState({ cityArray: res.data.data })
-			})
-	}
 
 	async onDestChange(event){
 		this.setState({ desLoc: event.target.value }, this.checkFormFields)
@@ -204,6 +186,36 @@ class Flights extends Component {
 		var totalTicketCount = this.state.infantTravellerCount + this.state.childrenTravellerCount + this.state.adultTravellerCount
 		var quantityClassString = totalTicketCount + ", " + this.state.ticketClass
 
+		var isLoading = false
+
+		const handleSourceSearch = (query) => {
+			isLoading = true
+			amadeusApi.get('/citySearch', { params: { cityName: query } } )
+			.then(res => {
+			console.log("Loading Done")
+			this.setState({ sourceCityArray: res.data.cityData, sourceCityCount: res.data.count })
+			isLoading = false
+		})
+		}
+		
+		const handleDesSearch = (query) => {
+			isLoading = true
+			amadeusApi.get('/citySearch', { params: { cityName: query } } )
+			.then(res => {
+			console.log("Loading Done")
+			this.setState({ desCityArray: res.data.cityData, sourceCityCount: res.data.count })
+			isLoading = false
+		})
+		}
+
+		const handleSourceChange = (query) => {
+			this.setState({sourceLoc: query})
+		}
+
+		const handleDestChange = (query) => {
+			this.setState({desLoc: query})
+		}
+
 		return(
 			<section className="flights-background-img">
 				<Container className="pt-5">
@@ -213,14 +225,15 @@ class Flights extends Component {
 								<Col>
 									<Form.Group controlId="formGroupSource">
 										<Form.Label>Depart From</Form.Label>
-										<Typeahead
+										<AsyncTypeahead
 											className="bg-dark text-white"
-											onSearch={ (e) => this.locSearch }
-											onChange={ (e) => this.onSourceChange }
-											options={this.state.cityArray}
+											isLoading={ isLoading }
+											onSearch={ handleSourceSearch }
+											onChange={ handleSourceChange }
+											options={this.state.sourceCityArray}
 											id="source-loc"
 											minLength={2}
-											labelKey="name"
+											labelKey="nameCity"
 											selected={this.state.sourceLoc}
 											placeholder="City"
 											/>
@@ -229,7 +242,18 @@ class Flights extends Component {
 								<Col>
 									<Form.Group controlId="formGroupDest">
 										<Form.Label>Going To</Form.Label>
-										<Form.Control className="bg-dark text-white" type="dest-loc" placeholder="City" onChange={ this.onDestChange } />
+										<AsyncTypeahead
+											className="bg-dark text-white"
+											isLoading={ isLoading }
+											onSearch={ handleDesSearch }
+											onChange={ handleDestChange }
+											options={this.state.desCityArray}
+											id="source-loc"
+											minLength={2}
+											labelKey="nameCity"
+											selected={this.state.desLoc}
+											placeholder="City"
+											/>
 									</Form.Group>
 								</Col>
 							</Row>
@@ -387,7 +411,7 @@ class Flights extends Component {
 												</Popover>
 											}
 											>
-										<Form.Control className="bg-dark text-white" type="travellerQuantityClass" defaultValue={ quantityClassString } readOnly />
+										<Form.Control className="bg-dark text-white" type="travellerQuantityClass" defaultValue={ quantityClassString } value={quantityClassString} readOnly />
 										</OverlayTrigger>
 									</Form.Group>
 								</Col>

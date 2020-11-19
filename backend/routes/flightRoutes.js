@@ -11,36 +11,52 @@ const amadeus = new Amadeus({
 })
 
 router.get(`/citySearch`, async (req, res) => { 
-	console.log(req.query); 
-	var keywords = req.query.keyword; 
+	var keywords = req.query.cityName; 
+	// Get first response to calculate total number of cities
 	const response = await amadeus.referenceData.locations 
 	  .get({ 
 		keyword: keywords, 
-		subType: "CITY,AIRPORT", 
-		"page[offset]": page * 10
+		subType: "CITY", 
 	  })
 	  .catch((x) => console.log(x)); 
+	//Total Number of Cities
+	var totalResponses = response.result.meta.count
+	//Total Number of Pages
+	var totalPages = Math.ceil(totalResponses/10)
+	var cityData = [];
+	// For loop gets every single page
+	for(var x = 0; x < totalPages; x++){
+		var pageResponse = await amadeus.referenceData.locations
+			.get({
+				keyword: keywords,
+				subType: "CITY",
+				page: { offset: x*10 }
+			})
+			.then(function(pageResponse){
+				for(var y = 0; y < 10; y++){
+					//var currentCity = pageResponse.data[y]
+					if(pageResponse.data[y] != null){
+						var currentCity = {
+							nameCity: pageResponse.data[y].address.cityName,
+							nameCountry: pageResponse.data[y].address.countryName,
+							codeCity: pageResponse.data[y].address.cityCode,
+							codeCountry: pageResponse.data[y].address.countryCode,
+							iata: pageResponse.data[y].iataCode,
+							id: pageResponse.data[y].id,
+							href: pageResponse.data[y].self.href,
+							name: pageResponse.data[y].name
+						}
+						cityData.push(currentCity)
+					}
+				}
+			})
+			.catch((x) => console.log(x));
+	}
 	try { 
-	  await res.json(JSON.parse(response.body)); 
+	  await res.json({count: totalResponses, cityData}); 
 	} catch (err) { 
 	  await res.json(err); 
 	} 
-  });
-
-router.get(`/cities`, async (req, res) => {
-	var key = req.query.cityName
-	// API call with params we requested from client app
-	const response = await amadeus.client.get("/v1/reference-data/locations", {
-		keyword: key,
-		subType: "CITY"
-	})
-	.catch((err) => console.log(err));
-	// Sending response for client
-	try {
-	  await res.json(JSON.parse(response.body));
-	} catch (err) {
-	  await res.json(err);
-	}
   });
 
 
