@@ -1,5 +1,5 @@
 const express = require('express');
-
+const mongoose = require('mongoose');
 const keys = require('./config/keys')
 
 const cors = require('cors')
@@ -28,6 +28,11 @@ app.use(function(req, res, next) {
 app.use(passport.initialize())
 app.use(passport.session())
 
+const db = keys.mongoURI;
+mongoose
+    .connect(db, {useNewUrlParser: true, useUnifiedTopology: true})
+    .then(() => console.log('MongoDB Connected'))
+    .catch(err => console.log(err));
 
 app.use('/flights', flightRoutes)
 app.use('/auth', authRoutes)
