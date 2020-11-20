@@ -18,9 +18,7 @@ const config = {
 class navbar extends Component {
   state={
     profileData: {},
-    userExists: {
-      type: Boolean
-    }
+    userExists: false
   }
 
   constructor(){
@@ -39,9 +37,8 @@ class navbar extends Component {
 
 	render() {
     const image = this.state.profileData.photo;
-    if(this.state.userExists){
-      const AuthenticationButton = 
-          <OverlayTrigger 
+    console.log(this.state.userExists)
+    var authenticationButton = <OverlayTrigger 
             trigger="click"
             placement="bottom-start"
             rootClose={ true }
@@ -69,8 +66,8 @@ class navbar extends Component {
               <Image src={ image } rounded />
             </OverlayTrigger>
         
-    }
-    const AuthenticationButton = <OverlayTrigger
+    if(this.state.userExists === false){
+      authenticationButton = <OverlayTrigger
     trigger="click"
     placement="bottom-start"
     rootClose={ true }
@@ -117,7 +114,7 @@ class navbar extends Component {
     >
   <Button variant="outline-light">Sign In</Button>
   </OverlayTrigger>
-
+    }
   
 		return(
 		<Navbar bg="dark" expand="lg" variant="dark">
@@ -137,7 +134,7 @@ class navbar extends Component {
               <Nav.Link href="flights">Flights</Nav.Link>
               <Nav.Link href="hotels">Hotels</Nav.Link>
             </Nav>
-            { AuthenticationButton }
+            { authenticationButton }
           </Navbar.Collapse>
         </Navbar>
 		) 

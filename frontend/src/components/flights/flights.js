@@ -218,9 +218,9 @@ class Flights extends Component {
 
 		return(
 			<section className="flights-background-img">
-				<Container className="pt-5">
+				<Container className="px-5 py-5 space-between" >
 					<Row>
-					<Card className="bg-dark text-white mx-4" style={{ width: '30rem', height: '24.5rem' }}>
+					<Card className="bg-dark text-white mx-4 my-4" style={{ width: '30rem', height: '24.5rem' }}>
 						<Form className="px-4 py-4">
 							<Row>
 								<Col>
@@ -424,9 +424,9 @@ class Flights extends Component {
 							</Row>
 						</Form>
 					</Card>
-					<Jumbotron style={{ height: '10rem', background:'rgba(255,255,255,0.2)' }} className="text-white">
+					<Jumbotron style={{ height: '15rem', width: '30rem', background:'rgba(60,60,60,0.1)' }} className="text-white mx-4 my-4">
 						<div>
-							<h1 style={{ opacity: '1', color: '#ffffffff' }}>Where do you want to go?</h1>
+							<h1 className="inspireText" style={{ opacity: '1', color: '#ffffffff' }} align="right">Where do you want to go?</h1>
 						</div>
 					</Jumbotron>
 					</Row>
