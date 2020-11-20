@@ -127,7 +127,7 @@ class navbar extends Component {
               alt="Adsoni Travels"
               />    
           </Navbar.Brand>
-          <Navbar.Brand href="#home">Adsoni Travels</Navbar.Brand>
+          <Navbar.Brand href='/'>Adsoni Travels</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mr-auto">
