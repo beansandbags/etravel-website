@@ -18,7 +18,9 @@ const config = {
 class navbar extends Component {
   state={
     profileData: {},
-    userExists: false
+    userExists: {
+      type: Boolean
+    },
   }
 
   constructor(){
@@ -37,33 +39,40 @@ class navbar extends Component {
 
 	render() {
     const image = this.state.profileData.photo;
-    console.log(this.state.userExists)
     var authenticationButton = <OverlayTrigger 
             trigger="click"
             placement="bottom-start"
             rootClose={ true }
             overlay={
               <Popover id="profile-data">
-                <Card style={{width: '15rem', height:'16.5rem'}}>
+                <Card>
+                <Card.Header as="h5" align="center">{this.state.profileData.name}</Card.Header>
                   <Container className="px-4 py-2" align="center">
-                    <Row>
+                    <Row className="py-3">
                       <Col>
                         <Image src={ image } rounded />
                       </Col>
                     </Row>
-                    <Row>
-                      {this.state.profileData.name}
-                    </Row>
-                    <Row>
+                    <Row className="py-1">
                       <Button block size="sm">
                         Change Account Details
+                      </Button>
+                    </Row>
+                    <Row className="py-1">
+                      <Button block size="sm">
+                        Transaction History
+                      </Button>
+                    </Row>
+                    <Row className="py-1">
+                      <Button block size="sm" variant="danger">
+                        Logout
                       </Button>
                     </Row>
                   </Container>
                 </Card>
               </Popover>
             }>
-              <Image src={ image } rounded />
+              <Button variant="dark"><Image src={ image } rounded width="35" height="35" /></Button>
             </OverlayTrigger>
         
     if(this.state.userExists === false){
@@ -101,7 +110,7 @@ class navbar extends Component {
                   <Form.Label>New User?</Form.Label>
                 </Row>
                 <Row className="py-1">
-                  <Button variant="danger" size="sm" block>
+                  <Button variant="danger" size="sm" block href="http://localhost:5000/auth/google">
                     Register
                   </Button>
                 </Row>
