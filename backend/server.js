@@ -27,7 +27,9 @@ app.use(function(req, res, next) {
   });
 
 app.use(session({
-  secret: "adsoni"
+  secret: "adsoni",
+  resave: false,
+  saveUninitialized: true
 }))
 
 app.use(bodyParser.urlencoded({ extended: false }));

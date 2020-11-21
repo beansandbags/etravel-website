@@ -21,6 +21,8 @@ class navbar extends Component {
     userExists: {
       type: Boolean
     },
+    username: null,
+    password: null
   }
 
   constructor(){
@@ -35,6 +37,23 @@ class navbar extends Component {
         this.setState({profileData: res.data})
       })
       .catch((err) => console.log(err))
+
+      this.onUsernameChange = this.onUsernameChange.bind(this);
+      this.onPasswordChange = this.onPasswordChange.bind(this);
+  }
+
+  async onUsernameChange(e){
+    this.setState({ username: e.target.value })
+  }
+
+  async onPasswordChange(e){
+    this.setState({ password: e.target.value })
+  }
+
+  submitLogin(e){
+    e.preventDefault()
+    var submitObject= this.state
+    console.log(submitObject)
   }
 
 	render() {
@@ -64,7 +83,7 @@ class navbar extends Component {
                       </Button>
                     </Row>
                     <Row className="py-1">
-                      <Button block size="sm" variant="danger">
+                      <Button block size="sm" variant="danger" href="http://localhost:5000/auth/logout">
                         Logout
                       </Button>
                     </Row>
@@ -82,7 +101,7 @@ class navbar extends Component {
     rootClose={ true }
     overlay={
       <Popover id="authentication-panel">
-        <Card style={{width: '15rem', height:'16.5rem'}}>
+        <Card style={{width: '15rem'}}>
           <Container className="px-4 py-2">
             <Row>
               <Col>
@@ -91,27 +110,32 @@ class navbar extends Component {
                     <Form.Label>Existing User?</Form.Label>
                   </Row>
                   <Row className="py-1">
-                    <Form.Control block size="sm" placeholder="Email ID"/>
+                    <Form.Control type="email" block size="sm" placeholder="Email ID" onChange={ (e) => this.onUsernameChange(e) }/>
                   </Row>
                   <Row className="py-1">
-                    <Form.Control block size="sm" placeholder="Password"/>
+                    <Form.Control type="password" block size="sm" placeholder="Password" onChange={ (e) => this.onPasswordChange(e) }/>
                   </Row>
                   <Row className="pt-1">
-                    <Button block size="sm">
+                    <Button block size="sm" onClick={(e) => this.submitLogin(e)}>
                       Sign in
                     </Button>
                   </Row>
                 </Form.Group>
               </Col>
             </Row>
-            <Row>
+            <Row className="py-2">
               <Col>
                 <Row className="pt-1">
                   <Form.Label>New User?</Form.Label>
                 </Row>
                 <Row className="py-1">
-                  <Button variant="danger" size="sm" block href="http://localhost:5000/auth/google">
+                  <Button variant="danger" size="sm" block>
                     Register
+                  </Button>
+                </Row>
+                <Row>
+                  <Button className="font-weight-bold" variant="danger" size="sm" block href="http://localhost:5000/auth/google">
+                    Google
                   </Button>
                 </Row>
               </Col>

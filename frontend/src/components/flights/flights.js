@@ -42,7 +42,7 @@ class Flights extends Component {
 			this.setState({ sourceCityArray: res.data.cityData, desCityArray: res.data.cityData })
 		 })
 		.catch((err) => console.log(err))
-		this.onDestChange = this.onDestChange.bind(this);
+
 		this.onStartDateChange = this.onStartDateChange.bind(this);
 		this.onReturnDateChange = this.onReturnDateChange.bind(this);
 		this.onTripTypeChange = this.onTripTypeChange.bind(this);	
@@ -95,10 +95,6 @@ class Flights extends Component {
 		this.setState({ returnDate: date }, this.checkFormFields)
 	}
 
-
-	async onDestChange(event){
-		this.setState({ desLoc: event.target.value }, this.checkFormFields)
-	}
 
 	async onTripTypeChange(event){
 		this.setState({	TripType: event.target.value }, this.checkFormFields)
