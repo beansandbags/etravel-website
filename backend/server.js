@@ -1,6 +1,8 @@
 const express = require('express');
-
+const mongoose = require('mongoose');
 const keys = require('./config/keys')
+const session = require('express-session');
+const bodyParser = require('body-parser');
 
 const cors = require('cors')
 const passport = require('passport')
@@ -24,10 +26,25 @@ app.use(function(req, res, next) {
     next();
   });
 
+  
+app.use(session({
+  secret: "adsoni",
+  resave: false,
+  saveUninitialized: true
+}))
+
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(passport.initialize())
 app.use(passport.session())
 
+const db = keys.mongoURI;
+
+mongoose
+    .connect(db, {useNewUrlParser: true, useUnifiedTopology: true})
+    .then(() => console.log('MongoDB Connected'))
+    .catch(err => console.log(err));
 
 app.use('/flights', flightRoutes)
 app.use('/auth', authRoutes)

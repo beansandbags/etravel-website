@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
-import './flights.css'
 import { Container, Row, Col, Form, Card, OverlayTrigger, Popover, Button, ToggleButton, ButtonGroup, Jumbotron } from 'react-bootstrap';
 
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
@@ -44,13 +43,13 @@ class Flights extends Component {
 			this.setState({ sourceCityArray: res.data.cityData, desCityArray: res.data.cityData })
 		 })
 		.catch((err) => console.log(err))
-		this.onDestChange = this.onDestChange.bind(this);
 		this.onStartDateChange = this.onStartDateChange.bind(this);
 		this.onReturnDateChange = this.onReturnDateChange.bind(this);
 		this.onTripTypeChange = this.onTripTypeChange.bind(this);	
 	}
 
 	async checkFormFields(){
+		console.log(this.state.sourceLoc)
 		if(this.state.adultTravellerCount < 0){
 			this.setState({ adultTravellerCount: 0 })
 		}
@@ -94,18 +93,12 @@ class Flights extends Component {
 		this.setState({ startDate: date }, this.checkFormFields)
 		this.setState({startDateParsed: startDateParseString}, this.checkFormFields)
 	}
-
 	
 	async onReturnDateChange(date){
 		let [returnMonth, returnDate, returnYear] = new Date(this.state.returnDate).toLocaleDateString("en-US").split("/")
 		var returnDateParseString = returnYear + "-" + returnMonth + "-" + returnDate
 		this.setState({ returnDate: date }, this.checkFormFields)
 		this.setState({returnDateParsed: returnDateParseString}, this.checkFormFields)
-	}
-
-
-	async onDestChange(event){
-		this.setState({ desLoc: event.target.value }, this.checkFormFields)
 	}
 
 	async onTripTypeChange(event){

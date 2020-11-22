@@ -11,6 +11,11 @@ router.get('/logout', (req, res) => {
 	res.redirect('http://localhost:3000');
 })
 
+router.get('/localAuth', passport.authenticate('local'), (req, res) => {
+	console.log(res.user)
+	res.redirect('http://localhost:3000')
+})
+
 router.get('/google', passport.authenticate('google', {
 	scope: ['profile', 'email']
 }));

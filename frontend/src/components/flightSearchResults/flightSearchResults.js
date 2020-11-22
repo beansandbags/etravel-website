@@ -2,14 +2,25 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import queryString from'query-string';
 
-import '../flights/flights.css'
-import { Container, Row, Col, Card, Button, Spinner, Breadcrumb, Table, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Spinner, Breadcrumb, Table, Alert, Modal } from 'react-bootstrap';
 
 import currencySymbol from 'currency-symbol-map';
 
 const amadeusApi = axios.create({
 	baseURL: 'http://localhost:5000/flights'
 })
+
+const userApi = axios.create({
+	baseURL: 'http://localhost:5000/profile'
+})
+
+const config = {
+    withCredentials: true,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+};
+
 
 class FlightSearchResults extends Component {
 	state = {
@@ -23,8 +34,10 @@ class FlightSearchResults extends Component {
 		travelClass: null,
 		flightOffersSearchResults: null,
 		flightOffersCount: null,
-		flightDetailsDictionary: null,
-		flightDetailsMetadata: null,
+		currentUser: null,
+		userExists: false,
+		showModal: false,
+
 	}
 	constructor(props){
 		super(props)
@@ -41,13 +54,36 @@ class FlightSearchResults extends Component {
 		}})
 			.then(res => {
 				if(res.data.count!=null){
-					this.setState({ flightOffersSearchResults: res.data.offersData, flightOffersCount: res.data.count, flightDetailsDictionary: res.data.dictionary })
+					this.setState({ flightOffersSearchResults: res.data.offersData, flightOffersCount: res.data.count })
+				}
+			})
+		userApi.get('/', config)
+			.then(res => {
+				this.setState({ currentUser: res.data._id }, console.log(res.data))
+				if(this.state.currentUser!=null){
+					this.setState({userExists: true}, console.log(this.state.currentUser))
+				} else {
+					this.setState({userExists: false})
 				}
 			})
 	}
 
-	async fetchFlightSearchResults(){
+	submit(flight){
+		if(this.state.userExists === false){
+				this.setState({ showModal: true })
+		} else {
+			userApi.put('/' + this.state.currentUser, {ticket: flight})
+				.then(res => {
+					window.location = '/confirmOrder'
+				})
+				.catch(err => {
+					console.log(err)
+				})
+		}
+	}
 
+	redirectToLogin(e){
+		window.location = '/login'
 	}
 
 	render() {
@@ -87,13 +123,24 @@ class FlightSearchResults extends Component {
 		  return(
 			<section className="flights-background-img">
 				<Container className="px-5 py-5" >
+					<Modal show={this.state.showModal}>
+						<Modal.Header>
+							<Modal.Title>Error</Modal.Title>
+						</Modal.Header>
+						<Modal.Body>
+							You are not logged in, redirecting you to login
+						</Modal.Body>
+						<Modal.Footer>
+							<Button variant="danger" onClick={this.redirectToLogin}>Login</Button>
+						</Modal.Footer>
+					</Modal>
 					<Breadcrumb>
 						<Breadcrumb.Item href="/">Flights</Breadcrumb.Item>
 						<Breadcrumb.Item active>Flight Search Results</Breadcrumb.Item>
 					</Breadcrumb>
 					{this.state.flightOffersSearchResults.map(flightOffers => 
 						<Card className="bg-dark text-white my-3">
-							<Card.Header><Row><Col align="left">Price: {currencySymbol(flightOffers.price.currency)} {flightOffers.price.total}</Col><Col align="right"><Button size="sm" variant="danger">Buy Now</Button></Col></Row></Card.Header>
+							<Card.Header><Row><Col align="left">Price: {currencySymbol(flightOffers.price.currency)} {flightOffers.price.total}</Col><Col align="right"><Button size="sm" variant="danger" onClick={this.submit.bind(this, flightOffers)}>Buy Now</Button></Col></Row></Card.Header>
 							<Container className="px-3 py-3">
 							{ 
 								flightOffers.itineraries[0].segments.map(segment => 

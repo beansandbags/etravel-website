@@ -27,13 +27,17 @@ const UserSchema = new Schema({
         type: String
     },
     ticket: {
-        type: [TicketSchema],
-        default: []
+        type: Object,
+        default: null,
     },
     transaction_h: {
         type: [TransactionSchema],
         default: [],
     },
+    transaction_h_hotel: {
+        type: [TransactionSchema],
+        default: [],
+    }
  
 });
  
