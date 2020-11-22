@@ -3,17 +3,9 @@ import axios from 'axios';
 import queryString from'query-string';
 
 import '../flights/flights.css'
-import { Container, Row, Col, Form, Card, OverlayTrigger, Popover, Button, Spinner, ToggleButton, ButtonGroup, Jumbotron, Breadcrumb, Image, Table, Alert } from 'react-bootstrap';
-
-import { AsyncTypeahead } from 'react-bootstrap-typeahead';
-import 'react-bootstrap-typeahead/css/Typeahead.css';
-
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
+import { Container, Row, Col, Card, Button, Spinner, Breadcrumb, Table, Alert } from 'react-bootstrap';
 
 import currencySymbol from 'currency-symbol-map';
-
-var md5 = require('md5');
 
 const amadeusApi = axios.create({
 	baseURL: 'http://localhost:5000/flights'
@@ -60,11 +52,6 @@ class FlightSearchResults extends Component {
 
 	render() {
 		
-		  function getFlightLogoFromCode(code) {
-			  const airhexAPI = md5(code + "_350_100_r_VDjfGgv8mxiTvvLLwGicD6V2eq")
-			  return "https://content.airhex.com/content/logos/airlines_" + code + "_350_100_r.png?md5apikey=" + md5(airhexAPI)
-		  }
-
 		  if(this.state.flightOffersSearchResults === null && this.state.flightOffersCount === null){
 			  return(
 				  <section className="flights-background-img">
