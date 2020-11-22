@@ -54,7 +54,7 @@ class FlightSearchResults extends Component {
 		
 		  if(this.state.flightOffersSearchResults === null && this.state.flightOffersCount === null){
 			  return(
-				  <section className="flights-background-img">
+				  <section className="flights-background-img" style={{height: '100vh'}}>
 					  <Container className="px-5 py-5">
 						<Breadcrumb>
 							<Breadcrumb.Item href="/">Flights</Breadcrumb.Item>
@@ -70,7 +70,7 @@ class FlightSearchResults extends Component {
 			  )
 		  } else if(this.state.flightOffersSearchResults === null && this.state.flightOffersCount === 0){
 			return(
-				<section className="flights-background-img">
+				<section className="flights-background-img" style={{height: '100vh'}}>
 				  <Container className="px-5 py-5">
 					<Breadcrumb>
 						<Breadcrumb.Item href="/">Flights</Breadcrumb.Item>

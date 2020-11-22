@@ -21,7 +21,9 @@ class Flights extends Component {
 		sourceLoc: null,
 		desLoc: null,
 		startDate: null,
+		startDateParsed: null,
 		returnDate: null,
+		returnDateParsed: null,
 		TripType: 'single',
 		infantTravellerCount: 0,
 		childrenTravellerCount: 0,
@@ -87,12 +89,18 @@ class Flights extends Component {
 	}
 
 	async onStartDateChange(date){
+		let [startMonth, startDate, startYear] = new Date(date).toLocaleDateString("en-US").split("/")
+		var startDateParseString = startYear + "-" + startMonth + "-" + startDate
 		this.setState({ startDate: date }, this.checkFormFields)
+		this.setState({startDateParsed: startDateParseString}, this.checkFormFields)
 	}
 
 	
 	async onReturnDateChange(date){
+		let [returnMonth, returnDate, returnYear] = new Date(this.state.returnDate).toLocaleDateString("en-US").split("/")
+		var returnDateParseString = returnYear + "-" + returnMonth + "-" + returnDate
 		this.setState({ returnDate: date }, this.checkFormFields)
+		this.setState({returnDateParsed: returnDateParseString}, this.checkFormFields)
 	}
 
 
@@ -141,8 +149,41 @@ class Flights extends Component {
 
 	submit(e){
 		e.preventDefault()
-		var submitObject = this.state
-		console.log(submitObject)
+		var flightSearchResultString = "?"
+		if(this.state.sourceLoc !== null){
+			var sourceLocURL = "&sourceLoc=" + this.state.sourceLoc[0].iata
+			flightSearchResultString = flightSearchResultString.concat(sourceLocURL)
+		}
+		if(this.state.desLoc !== null){
+			var desLocURL = "&desLoc=" + this.state.desLoc[0].iata
+			flightSearchResultString = flightSearchResultString.concat(desLocURL)
+		}
+		if(this.state.startDate !== null){
+			var startDateURL = "&startDate=" + this.state.startDateParsed
+			flightSearchResultString = flightSearchResultString.concat(startDateURL)
+		}
+		if(this.state.returnDate !== null){
+			var returnDateURL = "&returnDate=" + this.state.returnDateParsed
+			flightSearchResultString = flightSearchResultString.concat(returnDateURL)
+		}
+		if(this.state.adultTravellerCount > 0){
+			var adultURL = "&adults=" + this.state.adultTravellerCount
+			flightSearchResultString = flightSearchResultString.concat(adultURL)
+		}
+		if(this.state.childrenTravellerCount > 0){
+			var childrenURL = "&children=" + this.state.childrenTravellerCount
+			flightSearchResultString = flightSearchResultString.concat(childrenURL)
+		}
+		if(this.state.infantTravellerCount > 0){
+			var infantURL = "&infants=" + this.state.infantTravellerCount
+			flightSearchResultString = flightSearchResultString.concat(infantURL)
+		}
+		if(this.state.ticketClass !== null){
+			var classUpperCase = this.state.ticketClass.toUpperCase()
+			var travelClassURL = "&travelClass=" + classUpperCase
+			flightSearchResultString = flightSearchResultString.concat(travelClassURL)
+		}
+		window.location = '/flightSearchResults' + flightSearchResultString
 	}
 
 	render() {
@@ -167,6 +208,8 @@ class Flights extends Component {
 		if(this.state.returnDate !== null){
 			let [returnMonth, returnDate, returnYear] = new Date(this.state.returnDate).toLocaleDateString("en-US").split("/")
 			returnDatePlaceholder = returnDate + "/" + returnMonth + "/" + returnYear
+			var returnDateParseString = returnYear + "-" + returnMonth + "-" + returnDate
+			this.setState({returnDateParsed: returnDateParseString})
 		} else {
 			returnDatePlaceholder = null
 		}
@@ -209,7 +252,7 @@ class Flights extends Component {
 		}
 
 		const handleSourceChange = (query) => {
-			this.setState({sourceLoc: query})
+			this.setState({sourceLoc: query}, console.log(query))
 		}
 
 		const handleDestChange = (query) => {
