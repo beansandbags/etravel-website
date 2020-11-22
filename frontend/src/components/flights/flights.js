@@ -217,7 +217,7 @@ class Flights extends Component {
 		}
 
 		return(
-			<section className="flights-background-img">
+			<section className="flights-background-img" style={{height: '100vh'}}>
 				<Container className="px-5 py-5 space-between" >
 					<Row>
 					<Card className="bg-dark text-white mx-4 my-4" style={{ width: '30rem', height: '24.5rem' }}>

@@ -101,7 +101,7 @@ class navbar extends Component {
                   <Form.Label>New User?</Form.Label>
                 </Row>
                 <Row className="py-1">
-                  <Button variant="danger" size="sm" block>
+                  <Button variant="danger" size="sm" block href="http://localhost:5000/auth/google">
                     Register
                   </Button>
                 </Row>

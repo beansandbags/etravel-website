@@ -69,7 +69,6 @@ router.get(`/citySearch`, async (req, res) => {
 	children_				 = req.query.children
 	infants_				 = req.query.infants
 	travelClass_			 = req.query.travelClass
-	console.log("1", req.query)
 	const response = await amadeus.shopping.flightOffersSearch
 		.get({
 			originLocationCode: originLocationCode_,
@@ -84,7 +83,7 @@ router.get(`/citySearch`, async (req, res) => {
 		})
 		.catch((e) => console.log(e))
 	  try {
-		await res.json({count: response.result.meta.count, offersData: response.result.data});
+		await res.json({count: response.result.meta.count, offersData: response.result.data, dictionary: response.result.dictionaries});
 	  } catch (err) {
 		await res.json(err);
 	  }
