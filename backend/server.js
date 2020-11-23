@@ -9,6 +9,7 @@ const cookieSession = require('cookie-session');
 const flightRoutes = require('./routes/flightRoutes')
 const profileRoutes = require('./routes/profileRoutes')
 const authRoutes = require('./routes/authRoutes')
+const hotelRoutes = require('./routes/hotelRoutes')
 
 const passportSetup = require('./config/passport-setup')
 
@@ -29,7 +30,10 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 
+
+
 app.use('/flights', flightRoutes)
+app.use('/hotels', hotelRoutes)
 app.use('/auth', authRoutes)
 app.use('/profile', profileRoutes)
 
