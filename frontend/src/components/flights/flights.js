@@ -39,7 +39,6 @@ class Flights extends Component {
 		super()
 		amadeusApi.get('/citySearch', { params: { cityName: "lmnopq" } } )
 		.then(res => {
-			console.log("Loading Done")
 			this.setState({ sourceCityArray: res.data.cityData, desCityArray: res.data.cityData })
 		 })
 		.catch((err) => console.log(err))
@@ -49,7 +48,8 @@ class Flights extends Component {
 	}
 
 	async checkFormFields(){
-		console.log(this.state.sourceLoc)
+		console.log(this.state.startDateParsed)
+		console.log(this.state.returnDateParsed)
 		if(this.state.adultTravellerCount < 0){
 			this.setState({ adultTravellerCount: 0 })
 		}
@@ -87,16 +87,24 @@ class Flights extends Component {
 		}
 	}
 
+	padTheDates(number, digits){
+		if(digits === 2){
+			return ("00"+ number).slice(-2)
+		} else {
+			return ("0000" + number).slice(-4)
+		}
+	}
+
 	async onStartDateChange(date){
-		let [startMonth, startDate, startYear] = new Date(date).toLocaleDateString("en-US").split("/")
-		var startDateParseString = startYear + "-" + startMonth + "-" + startDate
+		let [startMonth, startDate, startYear] = new Date(date).toLocaleDateString("en-US").split("/")		
+		var startDateParseString = this.padTheDates(startYear, 4) + "-" + this.padTheDates(startMonth, 2) + "-" + this.padTheDates(startDate, 2)
 		this.setState({ startDate: date }, this.checkFormFields)
 		this.setState({startDateParsed: startDateParseString}, this.checkFormFields)
-	}
+	}	
 	
 	async onReturnDateChange(date){
-		let [returnMonth, returnDate, returnYear] = new Date(this.state.returnDate).toLocaleDateString("en-US").split("/")
-		var returnDateParseString = returnYear + "-" + returnMonth + "-" + returnDate
+		let [returnMonth, returnDate, returnYear] = new Date(date).toLocaleDateString("en-US").split("/")
+		var returnDateParseString = this.padTheDates(returnYear, 4) + "-" + this.padTheDates(returnMonth, 2) + "-" + this.padTheDates(returnDate, 2)
 		this.setState({ returnDate: date }, this.checkFormFields)
 		this.setState({returnDateParsed: returnDateParseString}, this.checkFormFields)
 	}
@@ -201,8 +209,6 @@ class Flights extends Component {
 		if(this.state.returnDate !== null){
 			let [returnMonth, returnDate, returnYear] = new Date(this.state.returnDate).toLocaleDateString("en-US").split("/")
 			returnDatePlaceholder = returnDate + "/" + returnMonth + "/" + returnYear
-			var returnDateParseString = returnYear + "-" + returnMonth + "-" + returnDate
-			this.setState({returnDateParsed: returnDateParseString})
 		} else {
 			returnDatePlaceholder = null
 		}
@@ -270,7 +276,7 @@ class Flights extends Component {
 											options={this.state.sourceCityArray}
 											id="source-loc"
 											minLength={2}
-											labelKey="nameCity"
+											labelKey="cityCountryString"
 											selected={this.state.sourceLoc}
 											placeholder="City"
 											/>
@@ -287,7 +293,7 @@ class Flights extends Component {
 											options={this.state.desCityArray}
 											id="source-loc"
 											minLength={2}
-											labelKey="nameCity"
+											labelKey="cityCountryString"
 											selected={this.state.desLoc}
 											placeholder="City"
 											/>

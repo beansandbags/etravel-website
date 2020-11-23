@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
-import { Container, Row, Col, Card, Button, Spinner, Table, Alert, Modal, CardColumns, CardGroup } from 'react-bootstrap';
+import { Container, Row, Col, Card, Spinner, Table, Alert, CardGroup } from 'react-bootstrap';
 
 import currencySymbol from 'currency-symbol-map';
 
@@ -57,7 +57,7 @@ class TransactionHistory extends Component{
 		} else {
 			var flightData;
 			var hotelData;
-			if(this.state.currentUserFlightHistory.length == undefined){
+			if(this.state.currentUserFlightHistory.length === undefined){
 				flightData = <Container className="px-3 py-3">
 				There are no flights in your purchase history
 				</Container>

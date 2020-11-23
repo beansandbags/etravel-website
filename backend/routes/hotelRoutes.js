@@ -60,35 +60,31 @@ router.get(`/citySearch`, async (req, res) => {
 	} 
   });
 
-
-  router.get(`/flightOffers`, async (req, res) => {
-	originLocationCode_      = req.query.depart
-	destinationLocationCode_ = req.query.arrive
-	departureDate_           = req.query.departDate
-	returnDate_              = req.query.returnDate
-	adults_                  = req.query.adults
-	children_				 = req.query.children
-	infants_				 = req.query.infants
-	travelClass_			 = req.query.travelClass
-	const response = await amadeus.shopping.flightOffersSearch
-		.get({
-			originLocationCode: originLocationCode_,
-			destinationLocationCode: destinationLocationCode_,
-			departureDate: departureDate_,
-			returnDate: returnDate_,
-			adults: adults_,
-			children: children_,
-			infants: infants_,
-			travelClass: travelClass_,
-			currencyCode: "INR"
-		})
-		.catch((e) => console.log(e))
+  router.get('/hotelOffers', async (req, res) => {
+	  cityCode_ 	= req.query.cityCode
+	  checkInDate_ 	= req.query.checkInDate
+	  checkOutDate_	= req.query.checkOutDate
+	  adults_		= req.query.adults
+	  radius_		= req.query.radius
+	  radiusUnit_ 	= req.query.radiusUnit
+	  roomQuantity_	= req.query.roomQuantity
+	  pageOffset_	= req.query.pageOffset*10
+	  const response = await amadeus.shopping.hotelOffers
+	  		.get({
+				  cityCode: cityCode_,
+				  checkInDate: checkInDate_,
+				  checkOutDate: checkOutDate_,
+				  adults: adults_,
+				  radius: radius_,
+				  radiusUnit: radiusUnit_,
+			  })
+			.catch((e) => console.log(e))
 	  try {
-		await res.json({count: response.result.meta.count, offersData: response.result.data, dictionary: response.result.dictionaries});
-	  } catch (err) {
-		await res.json(err);
+		  await res.json({count: response.body.data.length, hotels: response.body.data});
+	  } catch(err) {
+		  await res.json(err);
 	  }
-  });
- 
+  })
 
-  module.exports = router;
+
+module.exports = router;

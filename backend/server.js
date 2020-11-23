@@ -4,13 +4,14 @@ const keys = require('./config/keys')
 const session = require('express-session');
 const bodyParser = require('body-parser');
 
-const cors = require('cors')
-const passport = require('passport')
+const cors = require('cors');
+const passport = require('passport');
 const cookieSession = require('cookie-session');
 
-const flightRoutes = require('./routes/flightRoutes')
-const profileRoutes = require('./routes/profileRoutes')
-const authRoutes = require('./routes/authRoutes')
+const flightRoutes = require('./routes/flightRoutes');
+const profileRoutes = require('./routes/profileRoutes');
+const authRoutes = require('./routes/authRoutes');
+const hotelRoutes = require('./routes/hotelRoutes');
 
 const passportSetup = require('./config/passport-setup')
 
@@ -46,9 +47,10 @@ mongoose
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err));
 
-app.use('/flights', flightRoutes)
-app.use('/auth', authRoutes)
-app.use('/profile', profileRoutes)
+app.use('/flights', flightRoutes);
+app.use('/auth', authRoutes);
+app.use('/profile', profileRoutes);
+app.use('/hotels', hotelRoutes);
 
 const port = process.env.PORT || 5000;
 
