@@ -54,7 +54,7 @@ class FlightSearchResults extends Component {
 		}})
 			.then(res => {
 				if(res.data.count!=null){
-					this.setState({ flightOffersSearchResults: res.data.offersData, flightOffersCount: res.data.count })
+					this.setState({ flightOffersSearchResults: res.data.offersData, flightOffersCount: res.data.count, startDate: params.startDate, returnDate: params.returnDate })
 				}
 			})
 		userApi.get('/', config)
@@ -74,7 +74,13 @@ class FlightSearchResults extends Component {
 		} else {
 			userApi.put('/' + this.state.currentUser, {ticket: flight})
 				.then(res => {
-					window.location = '/confirmOrder'
+					var startDateURL = "?startDate=" + this.state.startDate
+					if(this.state.returnDate){
+						var returnDateURL = "&returnDate=" + this.state.returnDate
+						window.location = '/confirmOrder' + startDateURL + returnDateURL
+					} else {
+						window.location = '/confirmOrder' + startDateURL
+					}
 				})
 				.catch(err => {
 					console.log(err)
@@ -143,74 +149,75 @@ class FlightSearchResults extends Component {
 							<Card.Header><Row><Col align="left">Price: {currencySymbol(flightOffers.price.currency)} {flightOffers.price.total}</Col><Col align="right"><Button size="sm" variant="danger" onClick={this.submit.bind(this, flightOffers)}>Buy Now</Button></Col></Row></Card.Header>
 							<Container className="px-3 py-3">
 							{ 
-								flightOffers.itineraries[0].segments.map(segment => 
-									<Card className="bg-dark text-white">
-										<Card.Header><Row><Col align="left">Segment ID: {segment.id}</Col><Col align="right">Duration: {segment.duration.replace(/PT(\d+)H(\d+)M/, "$1 hours $2 minutes")}</Col></Row></Card.Header>
-										<Container className="px-3 py-3">
-											<Row>
-												<Col>
-													<Card className="bg-dark text-white">
-														<Card.Header align="center" as="h6">Departure</Card.Header>
-														<Container>
-															<Table size="sm" borderless variant="dark">
-																	<tr>
-																		<th>Departing From</th>
-																		<td>{ segment.departure.iataCode }</td>
-																	</tr>
-																	<tr>
-																		<th>Terminal</th>
-																		<tr>{ segment.departure.terminal }</tr>
-																	</tr>
-																	<tr>
-																		<th>At</th>
-																		<tr>{ segment.departure.at }</tr>
-																	</tr>
-																	<tr>
-																		<th>Time</th>
-																		<tr>{ new Date(segment.departure.at).toLocaleTimeString('en-GB')}</tr>
-																	</tr>
-															</Table>
-														</Container>
-													</Card>
-												</Col>
-												<Col>
-													<Card className="bg-dark text-white">
-														<Card.Header align="center" as="h6">Arrival</Card.Header>
-														<Container>
-															<Table size="sm" borderless variant="dark">
-																	<tr>
-																		<th>Arriving At</th>
-																		<td>{ segment.arrival.iataCode }</td>
-																	</tr>
-																	<tr>
-																		<th>Terminal</th>
-																		<tr>{ segment.arrival.terminal }</tr>
-																	</tr>
-																	<tr>
-																		<th>At</th>
-																		<tr>{ new Date(segment.arrival.at).toLocaleDateString('en-GB') }</tr>
-																	</tr>
-																	<tr>
-																		<th>Time</th>
-																		<tr>{ new Date(segment.arrival.at).toLocaleTimeString('en-GB')}</tr>
-																	</tr>
-															</Table>
-														</Container>
-													</Card>
-												</Col>
-											</Row>
-										</Container>
-									</Card>
-
-								) 
-							}
-						</Container>
-					</Card>	
-						)
-						}
-						
-				</Container>
-			</section>
+							flightOffers.itineraries.map(itinerary => 
+								<Card className="bg-dark text-red">
+									<Card.Header>Total Duration: {itinerary.duration.replace(/PT(\d+)H(\d+)M/, "$1 hour $2 minutes")}</Card.Header>
+									{itinerary.segments.map(segment => 
+										<Card className="bg-dark text-white">
+											<Card.Header><Row><Col align="left">Segment ID: {segment.id}</Col><Col align="right">Duration: {segment.duration.replace(/PT(\d+)H(\d+)M/, "$1 hours $2 minutes")}</Col></Row></Card.Header>
+											<Container className="px-3 py-3">
+												<Row>
+													<Col>
+														<Card className="bg-dark text-white">
+															<Card.Header align="center" as="h6">Departure</Card.Header>
+															<Container>
+																<Table size="sm" borderless variant="dark">
+																		<tr>
+																			<th>Departing From</th>
+																			<td>{ segment.departure.iataCode }</td>
+																		</tr>
+																		<tr>
+																			<th>Terminal</th>
+																			<tr>{ segment.departure.terminal }</tr>
+																		</tr>
+																		<tr>
+																			<th>At</th>
+																			<tr>{ segment.departure.at }</tr>
+																		</tr>
+																		<tr>
+																			<th>Time</th>
+																			<tr>{ new Date(segment.departure.at).toLocaleTimeString('en-GB')}</tr>
+																		</tr>
+																</Table>
+															</Container>
+														</Card>
+													</Col>
+													<Col>
+														<Card className="bg-dark text-white">
+															<Card.Header align="center" as="h6">Arrival</Card.Header>
+															<Container>
+																<Table size="sm" borderless variant="dark">
+																		<tr>
+																			<th>Arriving At</th>
+																			<td>{ segment.arrival.iataCode }</td>
+																		</tr>
+																		<tr>
+																			<th>Terminal</th>
+																			<tr>{ segment.arrival.terminal }</tr>
+																		</tr>
+																		<tr>
+																			<th>At</th>
+																			<tr>{ new Date(segment.arrival.at).toLocaleDateString('en-GB') }</tr>
+																		</tr>
+																		<tr>
+																			<th>Time</th>
+																			<tr>{ new Date(segment.arrival.at).toLocaleTimeString('en-GB')}</tr>
+																		</tr>
+																</Table>
+															</Container>
+														</Card>
+													</Col>
+												</Row>
+											</Container>
+										</Card>
+										)}
+								</Card>
+								)}
+							</Container>
+						</Card>	
+						)}
+					</Container>
+				</section>
 			)
 		}
 	}

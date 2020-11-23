@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import queryString from 'query-string';
 
 import { Container, Row, Col, Card, Button, Spinner, Table, Alert, Modal } from 'react-bootstrap';
 
@@ -22,13 +23,16 @@ class ConfirmOrder extends Component {
 		userFlight: null,
 		currentUserTransactions: null,
 		showModal: false,
+		startDate: null,
+		returnDate: null,
 	}
 
 	constructor(props){
 		super(props)
+		var params = queryString.parse(this.props.location.search)
 		userApi.get('/', config)
 			.then(res => {
-				this.setState({ currentUser: res.data._id, userFlight: res.data.ticket, currentUserTransactions: res.data.transaction_h })
+				this.setState({ currentUser: res.data._id, userFlight: res.data.ticket, currentUserTransactions: res.data.transaction_h, startDate: params.startDate, returnDate: params.returnDate })
 			})
 		this.previousPage = this.previousPage.bind(this);
 		this.checkOut = this.checkOut.bind(this);
@@ -59,9 +63,13 @@ class ConfirmOrder extends Component {
 					ticket: this.state.userFlight
 				})
 				.then(res => {
-					this.setState({ showModal: true })
-					
-					window.location = '/hotels'
+					var startDateURL = "?startDate=" + this.state.startDate
+					if(this.state.returnDate){
+						var returnDateURL = "&returnDate=" + this.state.returnDate
+						window.location = '/hotels' + startDateURL + returnDateURL
+					} else {
+						window.location = '/hotels' + startDateURL
+					}
 				})
 			})
 			.catch(err => console.log(err))

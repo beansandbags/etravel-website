@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import queryString from 'query-string';
 
 import { Container, Row, Col, Form, Card, OverlayTrigger, Popover, Button } from 'react-bootstrap';
 
@@ -27,11 +28,12 @@ class Hotels extends Component {
 		cityArray: null,
 		roomQuantity: 1,
 	}
-	constructor(){
-		super()
-		amadeusApi.get('/citySearch', { params: { cityName: "lmnopq" } } )
+	constructor(props){
+		super(props)
+		var params = queryString.parse(this.props.location.search)
+		amadeusApi.get('/citySearch', { params: { cityName: "lmnopq" }} )
 		.then(res => {
-			this.setState({ cityArray: res.data.cityData })
+			this.setState({ cityArray: res.data.cityData }, this.getDateFromParsed(params.startDate, params.returnDate))
 		 })
 		.catch((err) => console.log(err))
 	}
@@ -65,6 +67,19 @@ class Hotels extends Component {
 			return ("00"+ number).slice(-2)
 		} else {
 			return ("0000" + number).slice(-4)
+		}
+	}
+
+	getDateFromParsed(checkInDate, checkOutDate){
+		if(checkInDate){
+			let [checkInYear, checkInMonth, checkInDay] = checkInDate.split("-")
+			var newCheckInDateObject = new Date(checkInYear, String(Number(checkInMonth)-1), checkInDay)
+			this.onCheckInDateChange(newCheckInDateObject)
+		}
+		if(checkOutDate){
+			let [checkOutYear, checkOutMonth, checkOutDay] = checkOutDate.split("-")
+			var newCheckOutDateObject = new Date(checkOutYear, String(Number(checkOutMonth)-1), checkOutDay)
+			this.onCheckOutDateChange(newCheckOutDateObject)
 		}
 	}
 
@@ -351,14 +366,10 @@ class Hotels extends Component {
 							</Row>
 						</Form>
 					</Card>
-					
 				</Container>
 			</section>
 		)
 	}
-
-
-
 }
 
 export default Hotels;
