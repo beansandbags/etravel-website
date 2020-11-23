@@ -30,6 +30,10 @@ const UserSchema = new Schema({
         type: Object,
         default: null,
     },
+    hotel: {
+        type: Object,
+        default: null,
+    },
     transaction_h: {
         type: [TransactionSchema],
         default: [],

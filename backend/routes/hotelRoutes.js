@@ -68,6 +68,7 @@ router.get(`/citySearch`, async (req, res) => {
 	  radius_		= req.query.radius
 	  radiusUnit_ 	= req.query.radiusUnit
 	  roomQuantity_	= req.query.roomQuantity
+	  currency_		= req.query.currency
 	  pageOffset_	= req.query.pageOffset*10
 	  const response = await amadeus.shopping.hotelOffers
 	  		.get({
@@ -77,10 +78,11 @@ router.get(`/citySearch`, async (req, res) => {
 				  adults: adults_,
 				  radius: radius_,
 				  radiusUnit: radiusUnit_,
+				  currency: currency_,
 			  })
 			.catch((e) => console.log(e))
 	  try {
-		  await res.json({count: response.body.data.length, hotels: response.body.data});
+		  await res.json({count: response.result.data.length, hotels: response.result.data});
 	  } catch(err) {
 		  await res.json(err);
 	  }

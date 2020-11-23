@@ -28,7 +28,7 @@ class ConfirmOrder extends Component {
 		super(props)
 		userApi.get('/', config)
 			.then(res => {
-				this.setState({ currentUser: res.data._id, userFlight: res.data.ticket, currentUserTransactions: res.data.transaction_h }, console.log(this.state))
+				this.setState({ currentUser: res.data._id, userFlight: res.data.ticket, currentUserTransactions: res.data.transaction_h })
 			})
 		this.previousPage = this.previousPage.bind(this);
 		this.checkOut = this.checkOut.bind(this);
@@ -73,7 +73,7 @@ class ConfirmOrder extends Component {
 					<Container className="px-5 py-5">
 						<Alert variant="light">
 							<Row>
-								<Col align="left">Loading Search Results</Col><Col align="right"><Spinner animation="border"></Spinner></Col>
+								<Col align="left">Loading Details</Col><Col align="right"><Spinner animation="border"></Spinner></Col>
 								</Row>
 						</Alert>
 					  </Container>	
@@ -82,15 +82,15 @@ class ConfirmOrder extends Component {
 		} else if(this.state.userFlight === null){
 			return(
 			<section className="flights-background-img" style={{height: '100vh'}}>
-					<Container className="px-5 py-5">
-						<Alert className="bg-dark text-white">
-							<Row>
-								<Col align="left">Please select a flight first</Col><Col align="right"><Button href="/">Go Home</Button></Col>
-							</Row>
-						</Alert>
-					  </Container>	
-				</section>
-				)
+				<Container className="px-5 py-5">
+					<Alert className="bg-dark text-white">
+						<Row>
+							<Col align="left">Please select a flight first</Col><Col align="right"><Button href="/">Go Home</Button></Col>
+						</Row>
+					</Alert>
+					</Container>	
+			</section>
+			)
 		} else {
 
 		return(

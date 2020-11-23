@@ -59,9 +59,9 @@ class FlightSearchResults extends Component {
 			})
 		userApi.get('/', config)
 			.then(res => {
-				this.setState({ currentUser: res.data._id }, console.log(res.data))
+				this.setState({ currentUser: res.data._id })
 				if(this.state.currentUser!=null){
-					this.setState({userExists: true}, console.log(this.state.currentUser))
+					this.setState({userExists: true})
 				} else {
 					this.setState({userExists: false})
 				}

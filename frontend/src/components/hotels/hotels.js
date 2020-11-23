@@ -128,8 +128,13 @@ class Hotels extends Component {
 			var checkOutDateURL = "&checkOutDate=" + this.state.checkOutDateParsed
 			hotelSearchResultString = hotelSearchResultString.concat(checkOutDateURL)
 		}
-		if(this.state.adultTravellerCount > 0){
-			var adultURL = "&adults=" + this.state.adultTravellerCount
+		if(this.state.adults > 0){
+			var adultURL
+			if(this.state.adults > 2){
+				adultURL = "&adults=" + this.state.adults
+			} else {
+				adultURL = "&adults=" + 2
+			}
 			hotelSearchResultString = hotelSearchResultString.concat(adultURL)
 		}
 		if(this.state.roomQuantity > 0){
@@ -200,7 +205,7 @@ class Hotels extends Component {
 							<Row>
 								<Col>
 									<Form.Group controlId="formGroupSource">
-										<Form.Label>Depart From</Form.Label>
+										<Form.Label>Select City/Location</Form.Label>
 										<AsyncTypeahead
 											className="bg-dark text-white"
 											isLoading={ isLoading }
