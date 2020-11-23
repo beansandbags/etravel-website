@@ -148,11 +148,16 @@ class HotelSearchResults extends Component {
 							<Breadcrumb.Item href="/hotels">Hotels</Breadcrumb.Item>
 							<Breadcrumb.Item active>Hotel Search Results</Breadcrumb.Item>
 						</Breadcrumb>	
-						{this.state.hotelOffersSearchResults.map(hotelOffers => 
+						<Row>
+							<Col>
+							{this.state.hotelOffersSearchResults.map(hotelOffers => 
 							<Card className="bg-dark text-white my-3">
 								<Card.Header><Row><Col align="left">Price: {currencySymbol(hotelOffers.offers[0].price.currency)} {hotelOffers.offers[0].price.total}</Col><Col align="right"><Button size="sm" variant="danger" onClick={this.submit.bind(this, hotelOffers)}>Buy Now</Button></Col></Row></Card.Header>
 								<Container className="px-3 py-3">
 									<Row>
+										<Col>
+											<Image src={hotelOffers.hotel.media[0].uri} alt="hotel" style={{width: '100%'}} rounded />
+										</Col>
 										<Col>
 											<Card className="bg-dark text-white">
 												<Card.Header align="center" as="h6">{hotelOffers.hotel.name}</Card.Header>
@@ -199,13 +204,15 @@ class HotelSearchResults extends Component {
 												</Container>
 											</Card>
 										</Col>
-										<Col>
-											<Image src={hotelOffers.hotel.media[0].uri} alt="hotel" style={{width: '100%'}} rounded />
-										</Col>
 									</Row>
 								</Container>
 							</Card>
-							)}
+							)}	
+							</Col>
+							<Col style={{position: 'fixed'}}>
+								
+							</Col>
+							</Row>
 					</Container>
 				</section>
 			)

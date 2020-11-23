@@ -60,7 +60,8 @@ class ConfirmOrder extends Component {
 				})
 				.then(res => {
 					this.setState({ showModal: true })
-					window.location = '/'
+					
+					window.location = '/hotels'
 				})
 			})
 			.catch(err => console.log(err))
