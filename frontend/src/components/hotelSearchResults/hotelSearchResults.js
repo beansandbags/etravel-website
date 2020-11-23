@@ -35,6 +35,7 @@ class HotelSearchResults extends Component {
 		showModal: false,
 		hotelOffersSearchResults: null,
 		hotelOffersCount: null,
+		geoJSON_features: null
 	}
 
 	constructor(props){
@@ -51,7 +52,7 @@ class HotelSearchResults extends Component {
 		}})
 			.then(res => {
 				if(res.data.count != null){
-					this.setState({ hotelOffersSearchResults: res.data.hotels, hotelOffersCount: res.data.count })
+					this.setState({ hotelOffersSearchResults: res.data.hotels, hotelOffersCount: res.data.count }, this.updateGeoJSON_features)
 				}
 			})
 		userApi.get('/', config)
@@ -67,6 +68,45 @@ class HotelSearchResults extends Component {
 		this.createPhoneLink = this.createPhoneLink.bind(this);
 	}
 
+	async updateGeoJSON_features() {
+		var geoJSON_feats = []
+		var i = 0;
+			for(i = 0; i < this.state.hotelOffersCount; i++) {
+				var temp_feature = {
+					type: 'Feature',
+					geometry: {
+						type: 'Point',
+						coordinates: [this.state.hotelOffersSearchResults[i].hotel.latitude, this.state.hotelOffersSearchResults[i].hotel.longitude]
+					},
+					properties: {
+						name: this.state.hotelOffersSearchResults[i].hotel.name,
+						price: {
+							currency: this.state.hotelOffersSearchResults[i].offers[0].price.currency,
+							total: this.state.hotelOffersSearchResults[i].offers[0].price.total
+						},
+						img_link: this.state.hotelOffersSearchResults[i].hotel.media[0].uri,
+						rating: this.state.hotelOffersSearchResults[i].hotel.rating,
+						description: this.state.hotelOffersSearchResults[i].hotel.description,
+						address: this.state.hotelOffersSearchResults[i].hotel.address.lines,
+						room_description: this.state.hotelOffersSearchResults[i].offers[0].room.description.text,
+						contact: this.state.hotelOffersSearchResults[i].hotel.contact
+
+
+					}
+
+				}
+				geoJSON_feats.push(temp_feature)
+				
+			}
+			
+
+		this.setState({geoJSON_features: {type: 'geojson', data: { type: 'FeatureCollection', features: geoJSON_feats }}}, this.showGeoJSON)
+
+	}
+
+	async showGeoJSON() {
+		console.log(this.state.geoJSON_features)
+	}
 	createEmailLink(email){
 		var emailLink = "mailto:" + email
 		return emailLink
