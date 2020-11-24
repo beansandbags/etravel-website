@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const keys = require('./config/keys')
 const session = require('express-session');
 const bodyParser = require('body-parser');
+const MongoDBStore = require('connect-mongodb-session')(session);
 
 const cors = require('cors');
 const passport = require('passport');
@@ -12,6 +13,7 @@ const flightRoutes = require('./routes/flightRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const authRoutes = require('./routes/authRoutes');
 const hotelRoutes = require('./routes/hotelRoutes');
+const localAuthRoutes = require('./routes/user')
 
 const passportSetup = require('./config/passport-setup')
 
@@ -27,11 +29,30 @@ app.use(function(req, res, next) {
     next();
   });
 
-  
+const db = keys.mongoURI;
+
+mongoose
+    .connect(db, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true})
+    .then(() => console.log('MongoDB Connected'))
+    .catch(err => console.log(err));
+
+const mongoDBstore = new MongoDBStore({
+  uri: db,
+  collection: "adsoniSessions"
+})
+
+
 app.use(session({
+  name: "adsoni",
   secret: "adsoni",
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  store: mongoDBstore,
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 3,
+    sameSite: false,
+    secure: false,
+  }
 }))
 
 app.use(bodyParser.json())
@@ -40,17 +61,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize())
 app.use(passport.session())
 
-const db = keys.mongoURI;
-
-mongoose
-    .connect(db, {useNewUrlParser: true, useUnifiedTopology: true})
-    .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.log(err));
 
 app.use('/flights', flightRoutes);
 app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
 app.use('/hotels', hotelRoutes);
+app.use('/localAuth', localAuthRoutes);
 
 const port = process.env.PORT || 5000;
 

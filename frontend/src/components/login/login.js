@@ -7,7 +7,11 @@ import { Container, Row, Col, Form, Card, Button } from 'react-bootstrap';
 const userApi = axios.create({
 	baseURL: 'http://localhost:5000/profile'
 })
-  
+
+const authApi = axios.create({
+	baseURL: 'http://localhost:5000/localAuth'
+})
+
 const config = {
 	withCredentials: true,
 	headers: {
@@ -17,27 +21,12 @@ const config = {
 
 class Login extends Component{
 	state={
-		profileData: {},
-		userExists: {
-		  type: Boolean
-		},
 		username: null,
 		password: null
 	  }
 	
 	constructor(){
 		super()
-		userApi.get('/', config)
-		  .then(res => {
-			if(res.data){
-			  this.setState({userExists: true})
-			} else {
-			  this.setState({userExists: false})
-			}
-			this.setState({profileData: res.data})
-		  })
-		  .catch((err) => console.log(err))
-
 		this.onUsernameChange = this.onUsernameChange.bind(this);
 		this.onPasswordChange = this.onPasswordChange.bind(this);
 	}
@@ -52,8 +41,13 @@ class Login extends Component{
 
 	submitLogin(e){
 	e.preventDefault()
-	var submitObject= this.state
-	console.log(submitObject)
+	var param = ({
+		email: this.state.username,
+		password: this.state.password
+	})
+	authApi.post('/login', {email: param.email, password: param.password})
+		.then(res => console.log(res.data))
+		.catch(err => console.log(err))
 	}
 	
 	render(){

@@ -34,6 +34,7 @@ class navbar extends Component {
         } else {
           this.setState({userExists: false})
         }
+        console.log(res.data)
         this.setState({profileData: res.data})
       })
       .catch((err) => console.log(err))
