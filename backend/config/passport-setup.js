@@ -15,27 +15,17 @@ passport.deserializeUser((id, done) => {
 })
 
 passport.use(
-	new LocalStrategy((user, done) => {
-		console.log(user)
-			User.findOne({ email: user.userEmail }).then((currentUser) => {
-				if(currentUser){
-				console.log('User is: ', currentUser)
-				done(null, currentUser);
-			} else {
-				new User({
-					name: user.username,
-					password: user.password,
-					email: user.userEmail,
-					address: user.address
-				}).save().then((newUser) => {
-					console.log('New User Created: ', newUser);
-					done(null, newUser);
-				})
-			}
-		})
-	})
+	new LocalStrategy(
+		function(username, password, done){
+			User.findOne({email: username}, function(err, user) {
+				if(err){ return done(err)}
+				if(!user) {return done(null, false)}
+				if(user.password != password){ return cb(null, false); }
+				return done(null, user);  
+			})
+		}
+	)
 )
-
 
 passport.use(
 	new GoogleStrategy({

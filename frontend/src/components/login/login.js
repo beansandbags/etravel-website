@@ -4,8 +4,8 @@ import axios from 'axios';
 import { Container, Row, Col, Form, Card, Button } from 'react-bootstrap';
 
 
-const userApi = axios.create({
-	baseURL: 'http://localhost:5000/profile'
+const authApi = axios.create({
+	baseURL: 'http://localhost:5000/auth'
 })
   
 const config = {
@@ -17,27 +17,12 @@ const config = {
 
 class Login extends Component{
 	state={
-		profileData: {},
-		userExists: {
-		  type: Boolean
-		},
 		username: null,
 		password: null
 	  }
 	
 	constructor(){
 		super()
-		userApi.get('/', config)
-		  .then(res => {
-			if(res.data){
-			  this.setState({userExists: true})
-			} else {
-			  this.setState({userExists: false})
-			}
-			this.setState({profileData: res.data})
-		  })
-		  .catch((err) => console.log(err))
-
 		this.onUsernameChange = this.onUsernameChange.bind(this);
 		this.onPasswordChange = this.onPasswordChange.bind(this);
 	}
@@ -52,8 +37,17 @@ class Login extends Component{
 
 	submitLogin(e){
 	e.preventDefault()
-	var submitObject= this.state
-	console.log(submitObject)
+	var params = {
+		username: this.state.username,
+		password: this.state.password,
+	}
+	console.log(params)
+	authApi.post('/localAuth', {username: params.username, password: params.password})
+		.then(res => {
+			console.log(res.data)
+			window.location = '/'
+		})
+		.catch(err => console.log(err))
 	}
 	
 	render(){
@@ -89,7 +83,7 @@ class Login extends Component{
 											<Form.Label>New User?</Form.Label>
 											</Row>
 											<Row className="py-1">
-											<Button variant="danger" size="sm" block>
+											<Button variant="danger" size="sm" href="/registerNewUser" block>
 												Register
 											</Button>
 											</Row>
