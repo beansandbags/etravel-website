@@ -12,6 +12,7 @@ const config = {
 	withCredentials: true,
 	headers: {
 		'Content-Type': 'application/json',
+		'Access-Control-Allow-Origin': 'http://localhost:3000'
 	},
 };
 
@@ -44,8 +45,26 @@ class Login extends Component{
 	console.log(params)
 	authApi.post('/localAuth', {username: params.username, password: params.password})
 		.then(res => {
-			console.log(res.data)
-			window.location = '/'
+			console.log("1", res.data)
+			alert("hi")
+			authApi.post('/localRedirect', {username: params.username, password: params.password})
+				.then(res => {
+					console.log("second authAPI ", res.data)
+					alert("hi2")
+					authApi.post('/localRedirect', {username: params.username, password: params.password})
+						.then(res => {
+							console.log("third authAPI")
+							alert("hi3")
+						})
+						.catch(err => {
+							console.log(err)
+							alert("err2")
+						})
+				})
+				.catch(err => {
+					console.log(err)
+					alert("err")
+				})
 		})
 		.catch(err => console.log(err))
 	}

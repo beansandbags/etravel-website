@@ -5,23 +5,29 @@ const keys = require('./keys');
 const User = require('../models/user');
 
 passport.serializeUser((user, done) => {
+	console.log("Inside SERIALIZE")
 	done(null, user.id)
 })
 
 passport.deserializeUser((id, done) => {
+	console.log("INSIDE DESERIALIZE")
 	User.findById(id).then((user) => {
 		done(null, user);
 	})
 })
 
 passport.use(
-	new LocalStrategy(
+	new LocalStrategy({
+		callbackURL: '/auth/localRedirect'
+	},
 		function(username, password, done){
 			User.findOne({email: username}, function(err, user) {
 				if(err){ return done(err)}
 				if(!user) {return done(null, false)}
 				if(user.password != password){ return cb(null, false); }
-				return done(null, user);  
+				{
+					return done(null, user);  
+				}
 			})
 		}
 	)

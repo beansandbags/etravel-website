@@ -30,6 +30,7 @@ class navbar extends Component {
     userApi.get('/', config)
       .then(res => {
         if(res.data){
+          console.log(res.data)
           this.setState({userExists: true})
         } else {
           this.setState({userExists: false})

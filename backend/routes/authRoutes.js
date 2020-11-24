@@ -29,9 +29,29 @@ router.post('/createNewUser', (req, res) => {
 	})	
 })
 
-router.post('/localAuth', passport.authenticate('local', {successRedirect: '/', failureRedirect: '/auth'}), (req, res) => {
-	console.log(res.user)
-	res.redirect('http://localhost:3000')
+router.post('/localAuth', function(req, res, next) { passport.authenticate('local', (err, user) => {
+	console.log(err)
+	console.log("1", user)
+	if (err) {
+		return next(err)
+	}
+	if(!user){
+		console.log("NO USER")
+	}
+	req.logIn(user, function(err){
+		if(err) {
+			return next(err)
+		}
+		console.log("HERE")
+		res.json({success: true})
+	})
+})(req, res, next);
+})
+
+router.post('/localRedirect', passport.authenticate('local'), (req, res) => {
+	console.log("yy ", req.user)
+	//res.redirect('http://localhost:3000')
+	res.json({success: true})
 })
 
 router.get('/google', passport.authenticate('google', {
@@ -39,6 +59,7 @@ router.get('/google', passport.authenticate('google', {
 }));
 
 router.get('/google/redirect', passport.authenticate('google'), (req, res) => {
+	console.log("inside google redirect")
 	if(req.user.address === "1xx1"){
 		res.redirect('http://localhost:3000/auth/login/firstTimeLogin');
 	} else {
