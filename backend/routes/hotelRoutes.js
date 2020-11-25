@@ -45,7 +45,8 @@ router.get(`/citySearch`, async (req, res) => {
 							iata: pageResponse.data[y].iataCode,
 							id: pageResponse.data[y].id,
 							href: pageResponse.data[y].self.href,
-							name: pageResponse.data[y].name
+							name: pageResponse.data[y].name,
+							coordinates: {lat: pageResponse.data[y].geoCode.latitude, lng: pageResponse.data[y].geoCode.longitude}
 						}
 						cityData.push(currentCity)
 					}

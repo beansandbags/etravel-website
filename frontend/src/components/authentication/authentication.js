@@ -64,7 +64,7 @@ class RegisterNewUser extends Component {
 			email: this.state.userEmail,
 			name: this.state.username,
 			password: this.state.password,
-			loc: this.state.userLocationCode,
+			loc: this.state.userLocation,
 		})
 		console.log(params)
 		userApi.get('/localAuth', params)

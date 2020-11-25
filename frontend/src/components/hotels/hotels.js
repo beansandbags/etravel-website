@@ -133,7 +133,11 @@ class Hotels extends Component {
 		var hotelSearchResultString = "?"
 		if(this.state.city !== null){
 			var cityCodeURL = "&cityCode=" + this.state.city[0].iata
+			var cityLatURL = "&cityLat=" + this.state.city[0].coordinates.lat
+			var cityLongURL = "&cityLong=" + this.state.city[0].coordinates.lng
 			hotelSearchResultString = hotelSearchResultString.concat(cityCodeURL)
+			hotelSearchResultString = hotelSearchResultString.concat(cityLatURL)
+			hotelSearchResultString = hotelSearchResultString.concat(cityLongURL)
 		}
 		if(this.state.checkInDate !== null){
 			var checkInDateURL = "&checkInDate=" + this.state.checkInDateParsed
@@ -209,6 +213,7 @@ class Hotels extends Component {
 		
 		
 		const handleSourceChange = (query) => {
+			console.log(query)
 			this.setState({city: query}, console.log(query))
 		}
 

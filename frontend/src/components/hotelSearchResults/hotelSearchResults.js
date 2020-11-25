@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import queryString from'query-string';
+import queryString from 'query-string';
 
 import { Container, Row, Col, Card, Button, Spinner, Breadcrumb, Table, Alert, Modal, Image, ButtonGroup } from 'react-bootstrap';
+
+import ReactMapboxGl, { GeoJSONLayer } from 'react-mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 import Rating from '@material-ui/lab/Rating';
 
@@ -16,12 +19,34 @@ const userApi = axios.create({
 	baseURL: 'http://localhost:5000/profile'
 })
 
+const Map = ReactMapboxGl({
+	accessToken: 'pk.eyJ1Ijoic29oYW1iYWdjaGkxMDgwIiwiYSI6ImNraHdsZXdhZTF4emgyc2t6amJ5Y3BvcWUifQ.dnHFhLq8_IQWUV9IMf1F8w'
+})
+
 const config = {
     withCredentials: true,
     headers: {
       'Content-Type': 'application/json',
     },
 };
+
+const symbolLayout = {
+	'text-field': '{place}',
+	'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+	'text-offset': [0, 0.6],
+	'text-anchor': 'top',
+	'text-size': 20
+  };
+const symbolPaint = {
+	'text-color': 'white'
+  };
+  
+  const circleLayout = { visibility: 'visible' };
+  const circlePaint = {
+	'circle-color': 'white'
+  };
+  
+  
 
 class HotelSearchResults extends Component {
 	state = {
@@ -35,12 +60,14 @@ class HotelSearchResults extends Component {
 		showModal: false,
 		hotelOffersSearchResults: null,
 		hotelOffersCount: null,
-		geoJSON_features: null
+		geoJSON_features: null,
+		cityCentre: null,
 	}
 
 	constructor(props){
 		super(props)
 		var params = queryString.parse(this.props.location.search)
+		this.state.cityCentre = {lat: params.cityLat, lng: params.cityLong}
 		amadeusApi.get('/hotelOffers', {params: {
 			cityCode: params.cityCode,
 			checkInDate: params.checkInDate,
@@ -52,7 +79,7 @@ class HotelSearchResults extends Component {
 		}})
 			.then(res => {
 				if(res.data.count != null){
-					this.setState({ hotelOffersSearchResults: res.data.hotels, hotelOffersCount: res.data.count }, this.updateGeoJSON_features)
+					this.setState({ hotelOffersSearchResults: res.data.hotels, hotelOffersCount: res.data.count, cityCentre: [params.cityLong, params.cityLat]}, this.updateGeoJSON_features)
 				}
 			})
 		userApi.get('/', config)
@@ -71,41 +98,40 @@ class HotelSearchResults extends Component {
 	async updateGeoJSON_features() {
 		var geoJSON_feats = []
 		var i = 0;
+		var cityLatitude = 0;
+		var cityLongitude = 0;
 			for(i = 0; i < this.state.hotelOffersCount; i++) {
+				cityLatitude += this.state.hotelOffersSearchResults[i].hotel.latitude
+				cityLongitude += this.state.hotelOffersSearchResults[i].hotel.longitude
 				var temp_feature = {
 					type: 'Feature',
 					geometry: {
 						type: 'Point',
-						coordinates: [this.state.hotelOffersSearchResults[i].hotel.latitude, this.state.hotelOffersSearchResults[i].hotel.longitude]
+						coordinates: [this.state.hotelOffersSearchResults[i].hotel.longitude, this.state.hotelOffersSearchResults[i].hotel.latitude]
 					},
 					properties: {
-						name: this.state.hotelOffersSearchResults[i].hotel.name,
-						price: {
-							currency: this.state.hotelOffersSearchResults[i].offers[0].price.currency,
-							total: this.state.hotelOffersSearchResults[i].offers[0].price.total
-						},
-						img_link: this.state.hotelOffersSearchResults[i].hotel.media[0].uri,
-						rating: this.state.hotelOffersSearchResults[i].hotel.rating,
-						description: this.state.hotelOffersSearchResults[i].hotel.description,
-						address: this.state.hotelOffersSearchResults[i].hotel.address.lines,
-						room_description: this.state.hotelOffersSearchResults[i].offers[0].room.description.text,
-						contact: this.state.hotelOffersSearchResults[i].hotel.contact
-
-
+						place: this.state.hotelOffersSearchResults[i].hotel.name,
+						//price: {
+						//	currency: this.state.hotelOffersSearchResults[i].offers[0].price.currency,
+						//	total: this.state.hotelOffersSearchResults[i].offers[0].price.total
+						//},
+						//img_link: this.state.hotelOffersSearchResults[i].hotel.media[0].uri,
+						//rating: this.state.hotelOffersSearchResults[i].hotel.rating,
+						//description: this.state.hotelOffersSearchResults[i].hotel.description,
+						//address: this.state.hotelOffersSearchResults[i].hotel.address.lines,
+						//room_description: this.state.hotelOffersSearchResults[i].offers[0].room.description.text,
+						//contact: this.state.hotelOffersSearchResults[i].hotel.contact
 					}
-
 				}
 				geoJSON_feats.push(temp_feature)
-				
 			}
-			
-
-		this.setState({geoJSON_features: {type: 'geojson', data: { type: 'FeatureCollection', features: geoJSON_feats }}}, this.showGeoJSON)
-
+			cityLatitude = cityLatitude/(i)
+			cityLongitude = cityLongitude/(i)
+		this.setState({geoJSON_features: { type: 'FeatureCollection', features: geoJSON_feats }, cityCentre: [cityLongitude, cityLatitude]}, this.showGeoJSON)
 	}
 
 	async showGeoJSON() {
-		console.log(this.state.geoJSON_features)
+		console.log(this.state)
 	}
 	createEmailLink(email){
 		var emailLink = "mailto:" + email
@@ -137,7 +163,10 @@ class HotelSearchResults extends Component {
 		window.location = '/login'
 	}
 
+	
+
 	render(){
+		console.log("render ", this.state)
 		if(this.state.hotelOffersSearchResults === null && this.state.hotelOffersCount === null){
 			return(
 				<section className="flights-background-img" style={{height: '100vh'}}>
@@ -190,6 +219,28 @@ class HotelSearchResults extends Component {
 						</Breadcrumb>	
 						<Row>
 							<Col>
+							<Card className="bg-dark text-white my-3">
+								<div style={{height: '50vh', width: '100%'}}>
+									<Map
+										style="mapbox://styles/mapbox/dark-v10"
+										containerStyle={{
+											height: '50vh',
+											width: '100%'
+										}}
+										center={ this.state.cityCentre }
+										zoom={[12]}
+										>
+										<GeoJSONLayer
+											data={this.state.geoJSON_features}
+											circleLayout={circleLayout}
+											circlePaint={circlePaint}
+											circleOnClick={(e) => console.log(e)}
+											symbolLayout={symbolLayout}
+											symbolPaint={symbolPaint}
+										/>
+										</Map>
+								</div>
+							</Card>	
 							{this.state.hotelOffersSearchResults.map(hotelOffers => 
 							<Card className="bg-dark text-white my-3">
 								<Card.Header><Row><Col align="left">Price: {currencySymbol(hotelOffers.offers[0].price.currency)} {hotelOffers.offers[0].price.total}</Col><Col align="right"><Button size="sm" variant="danger" onClick={this.submit.bind(this, hotelOffers)}>Buy Now</Button></Col></Row></Card.Header>
@@ -248,9 +299,6 @@ class HotelSearchResults extends Component {
 								</Container>
 							</Card>
 							)}	
-							</Col>
-							<Col style={{position: 'fixed'}}>
-								
 							</Col>
 							</Row>
 					</Container>
