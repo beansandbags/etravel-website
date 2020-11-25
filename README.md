@@ -6,13 +6,13 @@ You will require two terminals
 
 The first
 
-    cd server
+    cd backend
     npm install
     npm run server
 
 The second
 
-    cd shopclone
+    cd frontend
     npm install
     npm start
 
