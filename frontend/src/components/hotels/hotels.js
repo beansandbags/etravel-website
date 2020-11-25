@@ -255,7 +255,7 @@ class Hotels extends Component {
 													onChange={ (value, event) => this.onCheckInDateChange(value) } />
 												</Popover> 
 												}>
-												<Form.Control className="bg-dark text-white" type="go-date" value={ startDatePlaceholder } placeholder="Departure Date" />
+												<Form.Control className="bg-dark text-white" type="go-date" value={ startDatePlaceholder } placeholder="Check In Date" />
 										</OverlayTrigger>
 									</Form.Group>
 								</Col>
@@ -274,7 +274,7 @@ class Hotels extends Component {
 													onChange={ (value, event) => this.onCheckOutDateChange(value) } />
 												</Popover> 
 										}>
-											<Form.Control className="bg-dark text-white" type="return-date" value={ returnDatePlaceholder } placeholder="Return Date" />
+											<Form.Control className="bg-dark text-white" type="return-date" value={ returnDatePlaceholder } placeholder="Check Out Date" />
 										</OverlayTrigger>
 									</Form.Group>
 								</Col>
