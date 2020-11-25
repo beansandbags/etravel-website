@@ -28,6 +28,7 @@ class Flights extends Component {
 		childrenTravellerCount: 0,
 		adultTravellerCount: 1,
 		ticketClass: 'Economy',
+		ticketClassValue: 'ECONOMY',
 		FormFieldsFilled: false,
 		sourceCityArray: null,
 		desCityArray: null,
@@ -48,8 +49,6 @@ class Flights extends Component {
 	}
 
 	async checkFormFields(){
-		console.log(this.state.startDateParsed)
-		console.log(this.state.returnDateParsed)
 		if(this.state.adultTravellerCount < 0){
 			this.setState({ adultTravellerCount: 0 })
 		}
@@ -145,7 +144,15 @@ class Flights extends Component {
 	}
 
 	async onClassChange(event){
-		this.setState({ ticketClass: event.target.value }, this.checkFormFields)
+		var classValueString
+		if(event.target.value === 'Economy'){
+			classValueString = 'ECONOMY'
+		} else if(event.target.value === 'Premium Economy'){
+			classValueString = 'PREMIUM_ECONOMY'
+		} else if(event.target.value === 'Business'){
+			classValueString = 'BUSINESS'
+		}
+		this.setState({ ticketClass: event.target.value, ticketClassValue: classValueString }, this.checkFormFields)
 	}
 
 	submit(e){
@@ -180,7 +187,7 @@ class Flights extends Component {
 			flightSearchResultString = flightSearchResultString.concat(infantURL)
 		}
 		if(this.state.ticketClass !== null){
-			var classUpperCase = this.state.ticketClass.toUpperCase()
+			var classUpperCase = this.state.ticketClassValue.toUpperCase()
 			var travelClassURL = "&travelClass=" + classUpperCase
 			flightSearchResultString = flightSearchResultString.concat(travelClassURL)
 		}
@@ -234,7 +241,6 @@ class Flights extends Component {
 			isLoading = true
 			amadeusApi.get('/citySearch', { params: { cityName: query } } )
 			.then(res => {
-			console.log("Loading Done")
 			this.setState({ sourceCityArray: res.data.cityData, sourceCityCount: res.data.count })
 			isLoading = false
 		})
@@ -244,14 +250,13 @@ class Flights extends Component {
 			isLoading = true
 			amadeusApi.get('/citySearch', { params: { cityName: query } } )
 			.then(res => {
-			console.log("Loading Done")
 			this.setState({ desCityArray: res.data.cityData, sourceCityCount: res.data.count })
 			isLoading = false
 		})
 		}
 
 		const handleSourceChange = (query) => {
-			this.setState({sourceLoc: query}, console.log(query))
+			this.setState({sourceLoc: query})
 		}
 
 		const handleDestChange = (query) => {

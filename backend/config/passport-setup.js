@@ -16,7 +16,6 @@ passport.deserializeUser((id, done) => {
 
 passport.use(
 	new LocalStrategy((user, done) => {
-		console.log(user)
 			User.findOne({ email: user.userEmail }).then((currentUser) => {
 				if(currentUser){
 				console.log('User is: ', currentUser)
@@ -45,7 +44,7 @@ passport.use(
 	}, (accessToken, refreshToken, profile, email, done) => {
 		User.findOne({googleID:email.id}).then((currentUser) => {
 			if(currentUser){
-				console.log('User is: ', currentUser)
+				console.log('Logged In: ', currentUser.name)
 				done(null, currentUser);
 			} else {
 				new User({
@@ -54,7 +53,7 @@ passport.use(
 					photo: email.photos[0].value,
 					email: email.emails[0].value
 				}).save().then((newUser) => {
-					console.log('New User Created: ', newUser);
+					console.log('New User Created: ', newUser.name);
 					done(null, newUser);
 				})
 			}

@@ -44,11 +44,11 @@ class TransactionHistory extends Component{
 	render(){
 		if(this.state.userExists === false){
 			return(
-				<section className="flights-background-img" style={{height: '100vh'}}>
+				<section className="flights-background-img" style={{height: '100%'}}>
 					<Container className="px-5 py-5">
 						<Alert variant="light">
 							<Row>
-								<Col align="left">Loading Search Results</Col><Col align="right"><Spinner animation="border"></Spinner></Col>
+								<Col align="left">Loading Data</Col><Col align="right"><Spinner animation="border"></Spinner></Col>
 								</Row>
 						</Alert>
 					  </Container>	
@@ -137,7 +137,7 @@ class TransactionHistory extends Component{
 			}
 
 			return(
-				<section className="flights-background-img" style={{height: '100vh'}}>
+				<section className="flights-background-img" style={{height: '100%'}}>
 					<Container className="px-5 py-5">
 						<CardGroup>
 							<Card className="bg-dark text-white">

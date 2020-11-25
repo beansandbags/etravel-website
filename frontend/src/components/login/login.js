@@ -17,27 +17,12 @@ const config = {
 
 class Login extends Component{
 	state={
-		profileData: {},
-		userExists: {
-		  type: Boolean
-		},
 		username: null,
 		password: null
 	  }
 	
 	constructor(){
 		super()
-		userApi.get('/', config)
-		  .then(res => {
-			if(res.data){
-			  this.setState({userExists: true})
-			} else {
-			  this.setState({userExists: false})
-			}
-			this.setState({profileData: res.data})
-		  })
-		  .catch((err) => console.log(err))
-
 		this.onUsernameChange = this.onUsernameChange.bind(this);
 		this.onPasswordChange = this.onPasswordChange.bind(this);
 	}
@@ -76,8 +61,9 @@ class Login extends Component{
 													<Form.Control type="password" block placeholder="Password" onChange={ (e) => this.onPasswordChange(e) }/>
 												</Row>
 												<Row className="pt-1">
-													<Button block onClick={(e) => this.submitLogin(e)}>
-													Sign in
+													<Button block //onClick={(e) => this.submitLogin(e)}>
+														href="http://localhost:5000/auth/google">
+														Sign in
 													</Button>
 												</Row>
 											</Form.Group>

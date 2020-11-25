@@ -73,11 +73,6 @@ class navbar extends Component {
                       </Col>
                     </Row>
                     <Row className="py-1">
-                      <Button block size="sm">
-                        Change Account Details
-                      </Button>
-                    </Row>
-                    <Row className="py-1">
                       <Button block size="sm" href="http://localhost:3000/transactionHistory">
                         Transaction History
                       </Button>
@@ -116,7 +111,8 @@ class navbar extends Component {
                     <Form.Control type="password" block size="sm" placeholder="Password" onChange={ (e) => this.onPasswordChange(e) }/>
                   </Row>
                   <Row className="pt-1">
-                    <Button block size="sm" onClick={(e) => this.submitLogin(e)}>
+                    <Button block size="sm" //{onClick={(e) => this.submitLogin(e)}}>
+                          href="http://localhost:5000/auth/google">
                       Sign in
                     </Button>
                   </Row>
@@ -129,7 +125,7 @@ class navbar extends Component {
                   <Form.Label>New User?</Form.Label>
                 </Row>
                 <Row className="py-1">
-                  <Button variant="danger" size="sm" block>
+                  <Button variant="danger" size="sm" href="http://localhost:3000/registerNewUser" block>
                     Register
                   </Button>
                 </Row>

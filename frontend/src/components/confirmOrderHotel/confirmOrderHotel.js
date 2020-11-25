@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
-import { Container, Row, Col, Card, Button, Spinner, Table, Alert, Modal, Image, ButtonGroup } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Spinner, Table, Alert, Modal, Image, ButtonGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import currencySymbol from 'currency-symbol-map';
 import Rating from '@material-ui/lab/Rating';
@@ -161,8 +161,22 @@ class ConfirmOrderHotel extends Component {
 												<Row>
 													<Col> 
 													<ButtonGroup style={{display: 'flex'}}>
-														<Button variant="danger" href={this.createEmailLink(this.state.userHotel.hotel.contact.email)}>Email</Button>
-														<Button variant="success" href={this.createPhoneLink(this.state.userHotel.hotel.contact.phone)}>Phone</Button>
+														<OverlayTrigger
+															placement="bottom"
+															delay={{show: 100, hide: 400}}
+															overlay={<Tooltip>
+																		{this.state.userHotel.hotel.contact.email}
+																	</Tooltip>}>
+															<Button variant="danger" href={this.createEmailLink(this.state.userHotel.hotel.contact.email)}>Email</Button>
+														</OverlayTrigger>
+														<OverlayTrigger
+															placement="bottom"
+															delay={{show: 100, hide: 400}}
+															overlay={<Tooltip>
+																		{this.state.userHotel.hotel.contact.phone}
+																	</Tooltip>}>
+															<Button variant="success" href={this.createPhoneLink(this.state.userHotel.hotel.contact.phone)}>Phone</Button>
+														</OverlayTrigger>
 													</ButtonGroup>
 													</Col>
 												</Row>

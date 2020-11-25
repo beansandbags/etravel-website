@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import queryString from 'query-string';
 
-import { Container, Row, Col, Card, Button, Spinner, Breadcrumb, Table, Alert, Modal, Image, ButtonGroup } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Spinner, Breadcrumb, Table, Alert, Modal, Image, ButtonGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import ReactMapboxGl, { GeoJSONLayer } from 'react-mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -131,7 +131,7 @@ class HotelSearchResults extends Component {
 	}
 
 	async showGeoJSON() {
-		console.log(this.state)
+		console.log({success: true})
 	}
 	createEmailLink(email){
 		var emailLink = "mailto:" + email
@@ -166,7 +166,6 @@ class HotelSearchResults extends Component {
 	
 
 	render(){
-		console.log("render ", this.state)
 		if(this.state.hotelOffersSearchResults === null && this.state.hotelOffersCount === null){
 			return(
 				<section className="flights-background-img" style={{height: '100vh'}}>
@@ -287,8 +286,22 @@ class HotelSearchResults extends Component {
 													<Row>
 														<Col> 
 														<ButtonGroup style={{display: 'flex'}}>
-															<Button variant="danger" href={this.createEmailLink(hotelOffers.hotel.contact.email)}>Email</Button>
-															<Button variant="success" href={this.createPhoneLink(hotelOffers.hotel.contact.phone)}>Phone</Button>
+															<OverlayTrigger
+																placement="bottom"
+																delay={{show: 100, hide: 400}}
+																overlay={<Tooltip>
+																			{hotelOffers.hotel.contact.email}
+																		</Tooltip>}>
+																	<Button variant="danger" href={this.createEmailLink(hotelOffers.hotel.contact.email)}>Email</Button>
+															</OverlayTrigger>
+															<OverlayTrigger
+																placement="bottom"
+																delay={{show: 100, hide: 400}}
+																overlay={<Tooltip>
+																			{hotelOffers.hotel.contact.phone}
+																		</Tooltip>}>
+																<Button variant="success" href={this.createPhoneLink(hotelOffers.hotel.contact.phone)}>Phone</Button>
+															</OverlayTrigger>
 														</ButtonGroup>
 														</Col>
 													</Row>

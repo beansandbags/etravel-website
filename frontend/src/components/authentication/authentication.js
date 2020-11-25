@@ -3,14 +3,6 @@ import axios from 'axios';
 
 import { Container, Row, Col, Form, Card, Button } from 'react-bootstrap';
 
-import { AsyncTypeahead } from 'react-bootstrap-typeahead';
-import 'react-bootstrap-typeahead/css/Typeahead.css';
-
-
-const amadeusApi = axios.create({
-	baseURL: 'http://localhost:5000/flights'
-})
-
 const userApi = axios.create({
 	baseURL: 'http://localhost:5000/auth'
 })
@@ -27,20 +19,10 @@ class RegisterNewUser extends Component {
 		username: null,
 		password: null,
 		userEmail: null,
-		userLocation: null,
-		CityArray: null,
-		userLocationCode: null,
 	}
 
 	constructor(){
 		super()
-		amadeusApi.get('/citySearch', { params: { cityName: "lmnopq" } } )
-		.then(res => {
-			console.log("Loading Done")
-			this.setState({ CityArray: res.data.cityData })
-		 })
-		.catch((err) => console.log(err))
-
 		this.onUsernameChange = this.onUsernameChange.bind(this);
 		this.onPasswordChange = this.onPasswordChange.bind(this);
 		this.onUserEmailChange = this.onUserEmailChange.bind(this);
@@ -64,9 +46,7 @@ class RegisterNewUser extends Component {
 			email: this.state.userEmail,
 			name: this.state.username,
 			password: this.state.password,
-			loc: this.state.userLocation,
 		})
-		console.log(params)
 		userApi.get('/localAuth', params)
 			.then(res => {
 				console.log(res.data)
@@ -75,25 +55,8 @@ class RegisterNewUser extends Component {
 	}
 
 	render(){
-
-		var isLoading = false;
-
-		const handleLocationSearch = (query) => {
-			isLoading = true
-			amadeusApi.get('/citySearch', { params: { cityName: query } } )
-			.then(res => {	
-			console.log("Loading Done")
-			this.setState({ CityArray: res.data.cityData })
-			isLoading = false
-		})
-		}
-
-		const onUserLocationChange = (query) => {
-			this.setState({ userLocationCode: query[0].codeCity, userLocation: query })
-		}
-
 		return(
-			<section className="flights-background-img">
+			<section className="flights-background-img" style={{height: '100vh'}}>
 				<Container className="py-5" style={{width:'50rem'}}>
 					<Card>
 						<Card.Header as="h4">Register</Card.Header>
@@ -131,29 +94,6 @@ class RegisterNewUser extends Component {
 											</Row>
 											<Row>
 												<Form.Control type="password" placeholder="Password" onChange={ this.onPasswordChange } block/>
-											</Row>
-										</Col>
-									</Row>
-								</Form.Group>
-								<Form.Group controlId="user-location">
-									<Row>
-										<Col>
-											<Row>
-												<Form.Label>Location</Form.Label>
-											</Row>
-											<Row>
-												<AsyncTypeahead
-													isLoading={ isLoading }
-													onSearch={ handleLocationSearch }
-													onChange={ onUserLocationChange }
-													options={ this.state.CityArray }
-													id="user-location"
-													minLength={2}
-													labelKey="nameCity"
-													selected={ this.state.userLocation }
-													placeholder="City"
-													style={{width:"100%"}}
-												/>
 											</Row>
 										</Col>
 									</Row>

@@ -12,7 +12,6 @@ router.get('/logout', (req, res) => {
 })
 
 router.get('/localAuth', passport.authenticate('local'), (req, res) => {
-	console.log(res.user)
 	res.redirect('http://localhost:3000')
 })
 

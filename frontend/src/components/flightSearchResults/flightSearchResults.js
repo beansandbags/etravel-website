@@ -150,8 +150,8 @@ class FlightSearchResults extends Component {
 							<Container className="px-3 py-3">
 							{ 
 							flightOffers.itineraries.map(itinerary => 
-								<Card className="bg-dark text-red">
-									<Card.Header>Total Duration: {itinerary.duration.replace(/PT(\d+)H(\d+)M/, "$1 hour $2 minutes")}</Card.Header>
+								<Card border="light" className="bg-dark text-red my-2">
+									<Card.Header><Row><Col align="right">Total Duration: {itinerary.duration.replace(/PT(\d+)H(\d+)M/, "$1 hour $2 minutes")}</Col></Row></Card.Header>
 									{itinerary.segments.map(segment => 
 										<Card className="bg-dark text-white">
 											<Card.Header><Row><Col align="left">Segment ID: {segment.id}</Col><Col align="right">Duration: {segment.duration.replace(/PT(\d+)H(\d+)M/, "$1 hours $2 minutes")}</Col></Row></Card.Header>

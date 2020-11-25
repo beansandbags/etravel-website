@@ -205,7 +205,6 @@ class Hotels extends Component {
 			isLoading = true
 			amadeusApi.get('/citySearch', { params: { cityName: query } } )
 			.then(res => {
-			console.log("Loading Done")
 			this.setState({ cityArray: res.data.cityData })
 			isLoading = false
 		})
@@ -213,8 +212,7 @@ class Hotels extends Component {
 		
 		
 		const handleSourceChange = (query) => {
-			console.log(query)
-			this.setState({city: query}, console.log(query))
+			this.setState({city: query})
 		}
 
 		return(
