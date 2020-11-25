@@ -41,3 +41,18 @@ body, html {
     transform: rotate(360deg);
   }
 }
+
+
+.flights-background-img {
+	background-image: url(https://picsum.photos/1920/1080/?blur);
+
+	background-position: top;
+	background-repeat: no-repeat;
+	background-size: cover;
+   background-attachment: fixed;
+   
+}
+
+.inspireText {
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
